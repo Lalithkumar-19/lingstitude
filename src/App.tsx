@@ -10,6 +10,8 @@ import LiveClasses from "./pages/LiveClasses";
 import AdminDashboard from "./pages/AdminDashboard";
 import BatchContent from "./pages/BatchContent";
 import PracticePartner from "./pages/PracticePartner";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/batches" element={<BatchContent />} />
           <Route path="/practice-partner" element={<PracticePartner />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />}/>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

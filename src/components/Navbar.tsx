@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,8 +47,8 @@ const Navbar = () => {
             <a href="#" className="text-foreground/80 hover:text-foreground transition-colors">
               Home
             </a>
-            <a href="#courses" className="text-foreground/80 hover:text-foreground transition-colors">
-              Courses
+            <a href="live-classes" className="text-foreground/80 hover:text-foreground transition-colors">
+              Live Classes
             </a>
             <a href="#about" className="text-foreground/80 hover:text-foreground transition-colors">
               About Us
@@ -55,8 +56,14 @@ const Navbar = () => {
             <a href="#testimonials" className="text-foreground/80 hover:text-foreground transition-colors">
               Testimonials
             </a>
+            {/* <a href="signup" className="text-foreground/80 hover:text-foreground transition-colors">
+              Sign Up
+            </a> */}
           </nav>
-          <Button>Get Started</Button>
+          <Link to="/signup">
+            <Button>Sign Up</Button>
+          </Link>
+           
         </div>
 
         <button
@@ -84,11 +91,11 @@ const Navbar = () => {
               Home
             </a>
             <a 
-              href="#courses" 
+              href="live-classes" 
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              Courses
+              Live Classes
             </a>
             <a 
               href="#about" 
@@ -104,8 +111,13 @@ const Navbar = () => {
             >
               Testimonials
             </a>
-            <Button onClick={() => setIsOpen(false)}>Get Started</Button>
-          </nav>
+             
+             
+            
+            </nav>
+            <Link to="/signup">
+            <Button className="w-full mt-6">Sign Up</Button>
+          </Link>
         </div>
       </div>
     </header>
