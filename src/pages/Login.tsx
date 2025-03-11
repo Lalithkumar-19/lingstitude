@@ -38,7 +38,7 @@ const LoginPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-center mb-4 text-gray-800">Login to Your Account</h1>
           
           <button 
-          onClick={handleGoogleSignup}
+          onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-3 mb-4 text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
