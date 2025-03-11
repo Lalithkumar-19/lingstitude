@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-const SignupPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,7 +24,7 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
     console.log('Form submitted:', formData);
   };
-  const handleGoogleSignup = () => {
+  const handleGoogleLogin = () => {
     console.log('Google signup clicked');
     // Implement Google OAuth integration here
   };
@@ -100,4 +100,4 @@ const SignupPage: React.FC = () => {
   );
 };
 
-export default SignupPage;
+export default LoginPage;
