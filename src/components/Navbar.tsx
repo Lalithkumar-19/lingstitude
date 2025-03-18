@@ -60,8 +60,8 @@ const Navbar = () => {
               Sign Up
             </a> */}
           </nav>
-          <Link to="/signup">
-            <Button>Sign Up</Button>
+          <Link to="/login">
+            <Button>Login</Button>
           </Link>
            
         </div>
