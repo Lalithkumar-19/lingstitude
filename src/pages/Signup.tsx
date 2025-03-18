@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const SignupPage: React.FC = () => {
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
