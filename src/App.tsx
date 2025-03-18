@@ -18,6 +18,7 @@ const queryClient = new QueryClient();
 import { ThemeProvider } from "next-themes";
 
 const App = () => (
+  
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class">
       <Theme appearance="light">

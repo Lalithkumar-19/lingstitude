@@ -51,6 +51,7 @@ const AllstudentsDisplay = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+
   return (
     <div className="flex-1 container mx-auto py-12 mt-10 px-4">
       <h1 className="text-3xl text-center md:text-4xl font-bold mb-4">All Users</h1>
@@ -64,8 +65,8 @@ const AllstudentsDisplay = () => {
         <Table className="w-full border-collapse border border-gray-300">
           <TableHeader>
             <TableRow className="bg-gray-200">
-              <TableHead className="border border-gray-300 px-4 py-2">ID</TableHead>
-              <TableHead className="border border-gray-300 px-4 py-2">Name</TableHead>
+              <TableHead className="border border-gray-300 px-4 py-2">FullName</TableHead>
+              <TableHead className="border border-gray-300 px-4 py-2">Phone Number</TableHead>
               <TableHead className="border border-gray-300 px-4 py-2">Email</TableHead>
               <TableHead className="border border-gray-300 px-4 py-2">Action</TableHead>
             </TableRow>
