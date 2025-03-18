@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import axios from "axios";
-import { Select } from "@radix-ui/react-select";
+import { Batch } from "./Coursestabs";
+import { Label } from "@radix-ui/react-label";
 axios.defaults.baseURL = "http://localhost:5001";
 
 const BatchStudentsDisplay = () => {
@@ -14,6 +14,39 @@ const BatchStudentsDisplay = () => {
   const [students, setstudents] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedBatch, setSelectedBatch] = useState<string>("");
+  const [batches, setBatches] = useState<Batch[]>([]);
+
+useEffect(() => {
+    document.title = "Admin Dashboard | Lingstitude";
+    
+    // Mock batches data
+    const mockBatches = [
+      {
+        id: "batch-2023-A",
+        name: "Professional Communication 2023-A",
+        startDate: "2023-09-01",
+        endDate: "2023-12-15",
+        studentsCount: 24,
+        description: "Focus on business English and professional communication"
+      },
+      {
+        id: "batch-2023-B",
+        name: "Interview Skills Workshop 2023-B",
+        startDate: "2023-10-05",
+        endDate: "2023-11-30",
+        studentsCount: 18,
+        description: "Intensive training for job interviews and career advancement"
+      }
+    ];
+    
+    // Simulate API call
+    setTimeout(() => {
+      setBatches(mockBatches);
+    }, 800);
+  }, []);
+
+
 
 
 
@@ -61,13 +94,30 @@ const BatchStudentsDisplay = () => {
       <h1 className="text-3xl text-center md:text-4xl font-bold mb-4">All students</h1>
      
 
-    
+                   <div className="space-y-6 mb-10">
+                      <Label htmlFor="batch">Select Batch</Label>
+                      <select
+                        id="batch"
+                        value={selectedBatch}
+                        onChange={(e) => setSelectedBatch(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                      >
+                        <option value="">Select a batch</option>
+                        {batches.map((batch) => (
+                          <option key={batch.id} value={batch.id}>
+                            {batch.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+       
       <div className="overflow-x-auto">
         <Table className="w-full border-collapse border border-gray-300">
           <TableHeader>
             <TableRow className="bg-gray-200">
-              <TableHead className="border border-gray-300 px-4 py-2">ID</TableHead>
               <TableHead className="border border-gray-300 px-4 py-2">Name</TableHead>
+              <TableHead className="border border-gray-300 px-4 py-2">Phone Number</TableHead>
               <TableHead className="border border-gray-300 px-4 py-2">Email</TableHead>
               <TableHead className="border border-gray-300 px-4 py-2">Action</TableHead>
             </TableRow>

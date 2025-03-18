@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Upload, FileText, FolderPlus, Calendar, Users, Clock } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-// import { ScheduleCard } from './ScheduleCard';
 
-type Batch = {
+import { toast } from "@/hooks/use-toast";
+import { ScheduleCard, ScheduleTypes } from './ScheduleCard';
+
+export type Batch = {
   id: string;
   name: string;
   startDate: string;
@@ -23,7 +24,7 @@ const Coursestabs:React.FC = () => {
 
 
 
-const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBatch, setSelectedBatch] = useState<string>("");
@@ -34,7 +35,35 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
 
 
-  const [scheduledClassses,setScheduledClasses]=useState([1,2,3,4,5]);
+  // const [scheduledClassses,setScheduledClasses]=useState([]);
+  const scheduleData: ScheduleTypes[] = [
+  {
+    classTitle: "React Basics",
+    batch: "Batch A - Morning",
+    description: "Introduction to React components and state management.",
+    date: new Date("2025-03-20"),
+    time: "10:00 AM - 11:30 AM",
+  },
+  {
+    classTitle: "Advanced Node.js",
+    batch: "Batch B - Evening",
+    description: "Deep dive into Node.js event loop and performance optimization.",
+    date: new Date("2025-03-21"),
+    time: "6:00 PM - 7:30 PM",
+  },
+  {
+    classTitle: "Database Design",
+    batch: "Batch C - Afternoon",
+    description: "Understanding relational vs NoSQL databases and best practices.",
+    date: new Date("2025-03-22"),
+    time: "2:00 PM - 3:30 PM",
+  },
+];
+
+
+
+
+
 
   useEffect(() => {
     document.title = "Admin Dashboard | Lingstitude";
@@ -66,11 +95,17 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
     }, 800);
   }, []);
 
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFiles(e.target.files);
     }
   };
+
+
+
+
+
 
   const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,8 +127,7 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
       return;
     }
 
-    // Here you would handle the actual file upload to your server
-    // using FormData and fetch or axios
+    
     
     toast({
       title: "Upload started",
@@ -112,6 +146,8 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
       if (fileInput) fileInput.value = '';
     }, 2000);
   };
+
+
 
   const handleCreateClass = (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,8 +173,12 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
     setNewClassTime("");
     setNewClassDescription("");
   };
+
+
+
+
   return (
-    <Tabs defaultValue="materials" className="w-full">
+    <Tabs defaultValue="materials" className="w-full border pt-2">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="materials">Upload Materials</TabsTrigger>
               <TabsTrigger value="classes">Schedule Classes</TabsTrigger>
@@ -223,11 +263,9 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
                 </CardContent>
               </Card>
             </TabsContent>
-
-
-
-            {/* //second one */}
             
+
+
             <TabsContent value="classes" className="mt-6">
               <Card>
                 <CardHeader>
@@ -314,16 +352,15 @@ const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
               </Card>
 
-              <div className='flex w-full place-items-center place-content-center border-blue-600 border-b border-spacing-4'>
-              <h2 className='text-center text-3xl'> Scheduled Classes</h2>
-              <div>
-               <div>
-             {scheduledClassses.length !== 0 && scheduledClassses.map((item) => {
-                return 1 
-              })}
+              <div className='flex w-full flex-col place-items-start place-content-start border-blue-700 border-b border-spacing-10'>
+                  <h2 className='text-center text-3xl'> Scheduled Classes</h2>
+                <div className='grid grid-cols-2 gap-3'>
+                    {scheduleData.map((schedule, index) => {
+                    return <ScheduleCard key={index} {...schedule} />
+                      })}
+                  </div>
+              <br/>
 
-              </div>
-              </div>
               </div>
 
             </TabsContent>
