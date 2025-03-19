@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { axiosInstance } from '@/lib/axios';
 
 const SignupPage: React.FC = () => {
-  // ✅ Form state with TypeScript type
+  // Form state with TypeScript type
   const [formData, setFormData] = useState<{
     name: string;
     email: string;
@@ -19,10 +21,10 @@ const SignupPage: React.FC = () => {
     accountType: 'user',
   });
 
-  // ✅ Zustand store for signup
-  const { signup, isSigningUp } = useAuthStore();
+  // Zustand store for signup
+  const { signup, isSigningUp, googleLogin } = useAuthStore();
 
-  // ✅ Handle input change for all types of input (including checkbox and radio buttons)
+  // Handle input change for all types of input (including checkbox and radio buttons)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevState) => ({
@@ -31,7 +33,7 @@ const SignupPage: React.FC = () => {
     }));
   };
 
-  // ✅ Handle form submission
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -45,6 +47,7 @@ const SignupPage: React.FC = () => {
         fullName: formData.name,
         email: formData.email,
         password: formData.password,
+        accountType: formData.accountType,
       });
     } catch (error) {
       console.error('Signup failed:', error);
@@ -52,10 +55,23 @@ const SignupPage: React.FC = () => {
   };
 
   // ✅ Handle Google OAuth Signup
-  const handleGoogleSignup = () => {
-    console.log('Google signup clicked');
-    // Implement Google OAuth integration here
-  };
+  const handleGoogleSignup = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const { access_token } = tokenResponse;
+        const userInfo = await axiosInstance.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+
+        await googleLogin(access_token);
+      } catch (error) {
+        console.error('Google Signup Error:', error);
+      }
+    },
+    onError: () => {
+      console.error('Google Signup Failed');
+    },
+  });
 
   return (
     <div>
@@ -211,8 +227,10 @@ const SignupPage: React.FC = () => {
               {isSigningUp ? 'Signing up...' : 'Sign Up'}
             </button>
           </form>
+
+          {/* Login Redirect */}
           <div className="text-center mt-4 text-gray-600 text-sm">
-            Don't have an account?{' '}
+            Already have an account?{' '}
             <a href="/login" className="text-blue-600">
               Login
             </a>

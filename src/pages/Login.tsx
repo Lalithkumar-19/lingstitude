@@ -1,73 +1,112 @@
-import React, { useState } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
-import Navbar from '../components/Navbar';
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import Footer from '../components/Footer';
-import { axiosInstance } from '@/lib/axios';
+import React, { useState, useEffect } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import axios from "axios"; // ✅
+import { axiosInstance } from "@/lib/axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
-  //  Form state with TypeScript type
+  // ✅ Form state with TypeScript types
   const [formData, setFormData] = useState<{
     email: string;
     password: string;
     agreeToTerms: boolean;
+    accountType: "user" | "admin";
   }>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     agreeToTerms: false,
+    accountType: "user",
   });
 
-  //  Import login and isLoggingIn from Zustand store
-  const { login, isLoggingIn, googleLogin} = useAuthStore();
+  const navigate=useNavigate();
 
-  //  Handle input change for all types of input (including checkbox)
+  // ✅ Zustand store hooks
+  const { login, isLoggingIn, googleLogin, setNavigate } = useAuthStore();
+
+// ✅ Set navigate when the component loads
+useEffect(() => {
+  setNavigate(navigate);
+}, [navigate]);
+
+
+  // ✅ Handle input changes (including checkbox & radio)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  //  Handle form submission
+  // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.agreeToTerms) {
-      alert('You must agree to the terms and conditions.');
+      alert("You must agree to the terms and conditions.");
       return;
     }
 
-    console.log('Submitting form:', formData);
-
     try {
-      await login({ email: formData.email, password: formData.password });
+      await login({
+        email: formData.email,
+        password: formData.password,
+        accountType: formData.accountType,
+      });
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
-  // Handle Google OAuth Login
+  // ✅ Google OAuth Login Handling
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-        try {
-            const { access_token } = tokenResponse;
-            const userInfo = await axiosInstance.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${access_token}` },
-            });
-
-            await googleLogin(access_token);
-        } catch (error) {
-            console.error('Google Login Error:', error);
+      try {
+        console.log("Google Token Response:", tokenResponse);
+        const { access_token } = tokenResponse;
+  
+        if (!access_token) {
+          console.error("No Access Token received!");
+          return;
         }
+  
+        // ✅ Fetch ID token from Google's tokeninfo endpoint
+        const tokenInfo = await axios.get(
+          `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
+        );
+  
+        const idToken = tokenInfo.data.id_token;
+        if (!idToken) {
+          console.error("No ID Token received!");
+          return;
+        }
+  
+        console.log("ID Token:", idToken);
+  
+        // ✅ Send ID token to backend using Zustand's googleLogin function
+        await googleLogin(idToken);
+      } catch (error) {
+        console.error("Google Login Error:", error);
+      }
     },
-    onError: () => {
-        console.error('Google Login Failed');
+    onError: (error) => {
+      console.error("Google Login Failed:", error);
     },
-});
+  });
+  
+  
+  
+  
+  
+  
+  
 
   return (
     <div>
+      {/* Navbar */}
       <Navbar />
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
@@ -78,7 +117,7 @@ const LoginPage: React.FC = () => {
 
           {/* Google Login Button */}
           <button
-            onClick={handleGoogleLogin}
+            onClick={() => handleGoogleLogin()}
             className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-3 mb-4 text-gray-700 hover:bg-gray-50 transition-colors"
             type="button"
           >
@@ -119,7 +158,10 @@ const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 font-medium mb-1"
+              >
                 Email Address
               </label>
               <input
@@ -135,7 +177,10 @@ const LoginPage: React.FC = () => {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-medium mb-1"
+              >
                 Password
               </label>
               <input
@@ -147,6 +192,28 @@ const LoginPage: React.FC = () => {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 required
               />
+            </div>
+
+            {/* Account Type */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Account Type
+              </label>
+              <div className="flex gap-4">
+                {["user", "admin"].map((type) => (
+                  <label key={type} className="flex items-center">
+                    <input
+                      type="radio"
+                      name="accountType"
+                      value={type}
+                      checked={formData.accountType === type}
+                      onChange={handleChange}
+                      className="w-4 h-4"
+                    />
+                    <span className="ml-2 capitalize">{type}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Agree to Terms Checkbox */}
@@ -162,11 +229,11 @@ const LoginPage: React.FC = () => {
                   required
                 />
                 <span className="ml-2 text-gray-600">
-                  I agree to the{' '}
+                  I agree to the{" "}
                   <a href="#" className="text-blue-600">
                     Terms of Service
-                  </a>{' '}
-                  and{' '}
+                  </a>{" "}
+                  and{" "}
                   <a href="#" className="text-blue-600">
                     Privacy Policy
                   </a>
@@ -178,23 +245,26 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               className={`w-full bg-blue-600 text-white p-2 rounded-md ${
-                isLoggingIn ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                isLoggingIn
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-blue-700"
               }`}
               disabled={isLoggingIn}
             >
-              {isLoggingIn ? 'Logging in...' : 'Login'}
+              {isLoggingIn ? "Logging in..." : "Login"}
             </button>
           </form>
 
           {/* Sign-up Redirect */}
           <div className="text-center mt-4 text-gray-600 text-sm">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <a href="/signup" className="text-blue-600">
               Sign-up
             </a>
           </div>
         </div>
       </div>
+      {/* Footer */}
       <Footer />
     </div>
   );

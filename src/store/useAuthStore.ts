@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios"; // Remove `.ts` from the import
+import { axiosInstance } from "../lib/axios";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-// import { io } from "socket.io-client";
+import { NavigateFunction } from "react-router-dom";
 
 // Define types for the state and actions
 interface AuthUser {
@@ -20,15 +19,16 @@ interface AuthState {
   isCheckingAuth: boolean;
   checkAuth: () => Promise<void>;
   signup: (data: { email: string; password: string; name?: string }) => Promise<void>;
-  login: (data: { email: string; password: string }) => Promise<void>;
+  login: (data: { email: string; password: string; accountType?: "user" | "admin" }) => Promise<void>;
   logout: () => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
   updateProfile: (data: Partial<AuthUser>) => Promise<void>;
+  setNavigate: (nav: NavigateFunction) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
-  // ✅ Use navigate outside the store
-  let navigate: ReturnType<typeof useNavigate>;
+  // ✅ Navigate reference to be set dynamically
+  let navigate: NavigateFunction | null = null;
 
   return {
     authUser: null,
@@ -38,19 +38,29 @@ export const useAuthStore = create<AuthState>((set, get) => {
     isCheckingAuth: true,
 
     // ✅ Set Navigate (Optional helper to pass navigate)
-    setNavigate: (nav: ReturnType<typeof useNavigate>) => {
+    setNavigate: (nav: NavigateFunction) => {
       navigate = nav;
     },
 
-    // ✅ Check Authentication Status
+    // ✅ Check Authentication Status (Retrieve from localStorage)
     checkAuth: async () => {
+      set({ isCheckingAuth: true });
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        set({ authUser: null, isCheckingAuth: false });
+        return;
+      }
+
       try {
-        const res = await axiosInstance.get("/auth/check");
+        const res = await axiosInstance.get("/auth/check", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         set({ authUser: res.data });
-      
       } catch (error: any) {
         console.error("Error in checkAuth:", error);
         set({ authUser: null });
+        localStorage.removeItem("token"); // Remove invalid token
       } finally {
         set({ isCheckingAuth: false });
       }
@@ -64,7 +74,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         set({ authUser: res.data });
         toast.success("Account created successfully");
 
-        // ✅ Navigate to /login after successful signup
+        // Navigate to /login after successful signup
         if (navigate) navigate("/login");
       } catch (error: any) {
         console.error("Signup error:", error);
@@ -78,12 +88,19 @@ export const useAuthStore = create<AuthState>((set, get) => {
     login: async (data) => {
       set({ isLoggingIn: true });
       try {
-        const res = await axiosInstance.post("/auth/login", data);
-        set({ authUser: res.data });
+        const endpoint = data.accountType === "admin" ? "/admin/login" : "/auth/login";
+        const res = await axiosInstance.post(endpoint, data);
+
+        // ✅ Store token in localStorage
+        localStorage.setItem("token", res.data.token);
+
+        set({ authUser: res.data.user });
         toast.success("Logged in successfully");
 
-        // ✅ Navigate to / after successful login
-        if (navigate) navigate("/");
+        // ✅ Navigate based on account type
+        if (navigate) {
+          navigate(data.accountType === "admin" ? "/admin" : "/");
+        }
       } catch (error: any) {
         console.error("Login error:", error);
         toast.error(error?.response?.data?.message || "Login failed");
@@ -92,11 +109,38 @@ export const useAuthStore = create<AuthState>((set, get) => {
       }
     },
 
+    // ✅ Google Login Function
+    googleLogin: async (token) => {
+      set({ isLoggingIn: true });
+      try {
+        const res = await axiosInstance.post("/auth/google-login", { token });
+    
+        // ✅ Store token in localStorage
+        localStorage.setItem("token", res.data.token);
+    
+        set({ authUser: res.data.user });
+        toast.success("Logged in with Google");
+    
+        // ✅ Navigate to home after login
+        if (navigate) navigate("/");
+      } catch (error: any) {
+        console.error("Google Login Error:", error);
+        toast.error(error.response?.data?.message || "Google login failed");
+      } finally {
+        set({ isLoggingIn: false });
+      }
+    },
+    
+
     // ✅ Logout Function
     logout: async () => {
       try {
         await axiosInstance.post("/auth/logout");
+
+        // ✅ Clear localStorage and reset auth state
+        localStorage.removeItem("token");
         set({ authUser: null });
+
         toast.success("Logged out successfully");
 
         // ✅ Navigate to /login after logout
@@ -104,22 +148,6 @@ export const useAuthStore = create<AuthState>((set, get) => {
       } catch (error: any) {
         console.error("Logout error:", error);
         toast.error(error?.response?.data?.message || "Logout failed");
-      }
-    },
-
-    googleLogin: async (token) => {
-      set({ isLoggingIn: true });
-      try {
-        const res = await axiosInstance.post('/auth/google-login', { token });
-        set({ authUser: res.data.user });
-        localStorage.setItem('token', res.data.token); // Save token for future use
-        toast.success('Logged in with Google');
-        if (navigate) navigate("/");
-      } catch (error: any) {
-        console.error('Google Login Error:', error);
-        toast.error(error.response?.data?.message || 'Google login failed');
-      } finally {
-        set({ isLoggingIn: false });
       }
     },
 
@@ -137,26 +165,5 @@ export const useAuthStore = create<AuthState>((set, get) => {
         set({ isUpdatingProfile: false });
       }
     },
-
-    //  Example Socket Handling (Optional)
-    // connectSocket: () => {
-    //   const { authUser } = get();
-    //   if (!authUser || get().socket?.connected) return;
-
-    //   const socket = io("http://localhost:5001", {
-    //     query: { userId: authUser._id },
-    //   });
-    //   socket.connect();
-
-    //   set({ socket: socket });
-
-    //   socket.on("getOnlineUsers", (userIds) => {
-    //     set({ onlineUsers: userIds });
-    //   });
-    // },
-
-    // disconnectSocket: () => {
-    //   if (get().socket?.connected) get().socket.disconnect();
-    // },
   };
 });
