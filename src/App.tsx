@@ -16,6 +16,9 @@ import { Theme } from "@radix-ui/themes"
 
 const queryClient = new QueryClient();
 import { ThemeProvider } from "next-themes";
+import BatchDashboard from "./pages/BatchDashboard";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const App = () => (
   
@@ -27,6 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+      <Navbar/>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/live-classes" element={<LiveClasses />} />
@@ -35,9 +39,11 @@ const App = () => (
           <Route path="/practice-partner" element={<PracticePartner />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />}/>
+          <Route path="/batch" element={<BatchDashboard/>}/>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer/>
       </BrowserRouter>
     </TooltipProvider>
     </Theme>

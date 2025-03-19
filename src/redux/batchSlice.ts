@@ -16,9 +16,13 @@ const batchSlice=createSlice({
         },
         deleteBatch:(state,action)=>{
             state.batches=state.batches.filter(batch=>batch.id!=action.payload);
-
         },
+        updateBatchName:(state,action)=>{
+            const index=state.batches.findIndex(item=>item.id==action.payload.id);
+            state.batches[index].batch_name=action.payload.name;
+
+        }
     },
 });
-export const{setBatches,addBatch,deleteBatch}=batchSlice.actions;
+export const{setBatches,addBatch,deleteBatch,updateBatchName}=batchSlice.actions;
 export default batchSlice.reducer;

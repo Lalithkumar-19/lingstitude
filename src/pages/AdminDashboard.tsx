@@ -8,26 +8,33 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import axiosInstance from "@/lib/axiosInstance";
+import { addSchedule } from "@/redux/schedulesSlice";
 
 
 const AdminDashboard = () => {
     const dispatch=useDispatch<AppDispatch>();
-    const batches=useSelector((state:RootState)=>state.batch.batches);
+
   
 
-  useEffect(()=>{
-    try {
-      const fetchBatches=async()=>{
-         await axiosInstance.get("/")
+    useEffect(()=>{
+      const fetchSchedule=async()=>{
+        try {
+         const res= await axiosInstance.get("/api/admin/schedule");
+         if(res.status==200){
+          console.log("courses",res.data.data);
+           res.data.data.map((item)=>{
+            console.log(item,"item");
+            dispatch(addSchedule(item));
+           })
+         }
+        } catch (error) {
+          console.log(error);
+        }
       }
+      fetchSchedule();
+    },[dispatch]);
+  
 
-      
-    } catch (error) {
-      console.log(error);
-    }
-
-
-    },[]);
    
 
 

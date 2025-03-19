@@ -6,9 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Upload, FileText, FolderPlus, Calendar, Users, Clock } from "lucide-react";
-
 import { toast } from "@/hooks/use-toast";
 import { ScheduleCard, ScheduleTypes } from './ScheduleCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
+import axiosInstance from '@/lib/axiosInstance';
+import { addSchedule } from '@/redux/schedulesSlice';
 
 export type Batch = {
   id: string;
@@ -22,83 +25,40 @@ export type Batch = {
 
 const Coursestabs:React.FC = () => {
 
+  const dispatch=useDispatch<AppDispatch>();
+  const batches=useSelector((state:RootState)=>state.batch.batches);
 
 
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [batches, setBatches] = useState<Batch[]>([]);
+
+  const [selectedFiles, setSelectedFiles] = useState<File| null>(null);
+  // const [batches, setBatches] = useState<Batch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBatch, setSelectedBatch] = useState<string>("");
   const [newClassTitle, setNewClassTitle] = useState("");
   const [newClassDate, setNewClassDate] = useState("");
   const [newClassTime, setNewClassTime] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
+  const [title,setTitle]=useState<string>("");
 
 
 
-  // const [scheduledClassses,setScheduledClasses]=useState([]);
-  const scheduleData: ScheduleTypes[] = [
-  {
-    classTitle: "React Basics",
-    batch: "Batch A - Morning",
-    description: "Introduction to React components and state management.",
-    date: new Date("2025-03-20"),
-    time: "10:00 AM - 11:30 AM",
-  },
-  {
-    classTitle: "Advanced Node.js",
-    batch: "Batch B - Evening",
-    description: "Deep dive into Node.js event loop and performance optimization.",
-    date: new Date("2025-03-21"),
-    time: "6:00 PM - 7:30 PM",
-  },
-  {
-    classTitle: "Database Design",
-    batch: "Batch C - Afternoon",
-    description: "Understanding relational vs NoSQL databases and best practices.",
-    date: new Date("2025-03-22"),
-    time: "2:00 PM - 3:30 PM",
-  },
-];
+  const scheduleData:any[]=useSelector((state:RootState)=>state.schedule.schedules);
 
-
+console.log("sc d",scheduleData);
 
 
 
 
   useEffect(() => {
     document.title = "Admin Dashboard | Lingstitude";
-    
-    // Mock batches data
-    const mockBatches = [
-      {
-        id: "batch-2023-A",
-        name: "Professional Communication 2023-A",
-        startDate: "2023-09-01",
-        endDate: "2023-12-15",
-        studentsCount: 24,
-        description: "Focus on business English and professional communication"
-      },
-      {
-        id: "batch-2023-B",
-        name: "Interview Skills Workshop 2023-B",
-        startDate: "2023-10-05",
-        endDate: "2023-11-30",
-        studentsCount: 18,
-        description: "Intensive training for job interviews and career advancement"
-      }
-    ];
-    
-    // Simulate API call
-    setTimeout(() => {
-      setBatches(mockBatches);
-      setIsLoading(false);
-    }, 800);
   }, []);
+
+
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFiles(e.target.files);
+      setSelectedFiles(e.target.files[0]);
     }
   };
 
@@ -107,18 +67,18 @@ const Coursestabs:React.FC = () => {
 
 
 
-  const handleUpload = (e: React.FormEvent) => {
+  const handleUpload = async(e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBatch) {
+    if (!selectedBatch||title.trim()=="") {
       toast({
         title: "Error",
-        description: "Please select a batch",
+        description: "Please select a batch or give title",
         variant: "destructive",
       });
       return;
     }
     
-    if (!selectedFiles || selectedFiles.length === 0) {
+    if (!selectedFiles) {
       toast({
         title: "Error",
         description: "Please select files to upload",
@@ -126,33 +86,35 @@ const Coursestabs:React.FC = () => {
       });
       return;
     }
-
-    
     
     toast({
       title: "Upload started",
-      description: `Uploading ${selectedFiles.length} file(s) to ${selectedBatch}`,
+      description: `Uploading file(s) to ${selectedBatch}`,
     });
-    
-    // Simulate successful upload
-    setTimeout(() => {
-      toast({
+     const formdata=new FormData();
+     formdata.set("file",selectedFiles[0]);
+     formdata.set("batch_name",selectedBatch);
+     formdata.set("title",title);
+    const res=await axiosInstance.post("/api/admin/upload-pdf",formdata);
+
+    if(res.status==200){
+       toast({
         title: "Upload complete",
-        description: `${selectedFiles.length} file(s) uploaded successfully`,
+        description: `file(s) uploaded successfully`,
       });
-      setSelectedFiles(null);
-      // Reset the file input
+       setSelectedFiles(null);
+    }
       const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
-    }, 2000);
   };
 
 
 
-  const handleCreateClass = (e: React.FormEvent) => {
+
+  const handleCreateClass = async(e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedBatch || !newClassTitle || !newClassDate || !newClassTime) {
+    if (!selectedBatch || !newClassTitle || !newClassDate || !newClassTime||!newClassDescription) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields",
@@ -160,12 +122,21 @@ const Coursestabs:React.FC = () => {
       });
       return;
     }
-    
-    // Here you would send the class data to your API
-    toast({
-      title: "Class scheduled",
-      description: `${newClassTitle} has been scheduled for ${newClassDate} at ${newClassTime}`,
+    const res=await axiosInstance.post("/api/admin/schedule",{
+      batchId:selectedBatch,
+      title:newClassTitle,
+      date:newClassDate,
+      time:newClassTime,
+      description:newClassDescription,
     });
+    if(res.status==201){
+      console.log(res.data.class,"data from schedul")
+      dispatch(addSchedule(res.data.class));
+      toast({
+        title:"Class Scheduled successfully",
+        description:"class is scheduled"
+      })
+    }    
     
     // Reset form
     setNewClassTitle("");
@@ -173,6 +144,8 @@ const Coursestabs:React.FC = () => {
     setNewClassTime("");
     setNewClassDescription("");
   };
+
+
 
 
 
@@ -209,10 +182,12 @@ const Coursestabs:React.FC = () => {
                         <option value="">Select a batch</option>
                         {batches.map((batch) => (
                           <option key={batch.id} value={batch.id}>
-                            {batch.name}
+                            {batch.batch_name}
                           </option>
                         ))}
                       </select>
+
+                      <Input placeholder='please enter the file name' className='mt-6' value={title} onChange={(e)=>setTitle(e.target.value)}></Input>
                     </div>
                     
                     <div className="space-y-2">
@@ -221,7 +196,6 @@ const Coursestabs:React.FC = () => {
                         <Input
                           id="fileUpload"
                           type="file"
-                          multiple
                           accept=".pdf,.ppt,.pptx,.doc,.docx"
                           onChange={handleFileChange}
                           className="hidden"
@@ -239,16 +213,17 @@ const Coursestabs:React.FC = () => {
                           </span>
                         </Label>
                         
-                        {selectedFiles && selectedFiles.length > 0 && (
+                        {selectedFiles && (
                           <div className="mt-4 text-left border rounded-md p-3 bg-muted/50">
                             <p className="font-medium mb-2">Selected files:</p>
                             <ul className="text-sm space-y-1">
-                              {Array.from(selectedFiles).map((file, index) => (
-                                <li key={index} className="flex items-center gap-2">
+                             {selectedFiles&&
+                                <li  className="flex items-center gap-2">
                                   <FileText className="h-4 w-4" />
-                                  {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                  {selectedFiles.name} ({(selectedFiles.size / 1024 / 1024).toFixed(2)} MB)
                                 </li>
-                              ))}
+                                }
+
                             </ul>
                           </div>
                         )}
@@ -291,7 +266,7 @@ const Coursestabs:React.FC = () => {
                         <option value="">Select a batch</option>
                         {batches.map((batch) => (
                           <option key={batch.id} value={batch.id}>
-                            {batch.name}
+                            {batch.batch_name}
                           </option>
                         ))}
                       </select>
@@ -353,12 +328,15 @@ const Coursestabs:React.FC = () => {
               </Card>
 
               <div className='flex w-full flex-col place-items-start place-content-start border-blue-700 border-b border-spacing-10'>
-                  <h2 className='text-center text-3xl'> Scheduled Classes</h2>
-                <div className='grid grid-cols-2 gap-3'>
+                  <h2 className='text-center text-3xl pl-2'> Scheduled Classes</h2>
+                <div className='grid md:grid-cols-2 gap-3 p-3'>
                     {scheduleData.map((schedule, index) => {
                     return <ScheduleCard key={index} {...schedule} />
                       })}
                   </div>
+                  {scheduleData.length===0&&
+                  <h2 className='pl-2'>No schedules till now</h2>
+                  }
               <br/>
 
               </div>

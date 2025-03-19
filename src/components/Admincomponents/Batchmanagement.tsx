@@ -8,8 +8,9 @@ import Swal from 'sweetalert2'
 import axiosInstance from '@/lib/axiosInstance'
 import { toast } from '@/hooks/use-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteBatch, setBatches } from "@/redux/batchSlice";
+import { addBatch, deleteBatch, setBatches, updateBatchName } from "@/redux/batchSlice";
 import { AppDispatch, RootState } from '@/redux/store';
+
 
 
 
@@ -21,6 +22,7 @@ const CreateBatch:React.FC = () => {
   const batches=useSelector((state:RootState)=>state.batch.batches);
 
   const [newBatch,setnewBatch]=useState("");
+  const[editBatch,setEditbatch]=useState("");
   
   useEffect(()=>{
     const fetchBatches=async()=>{
@@ -36,32 +38,51 @@ const CreateBatch:React.FC = () => {
   },[dispatch]);
 
 
-  const handleEditName=(name:string)=>{
-      Swal.fire({
+  const handleEditName=async(id:string,name:string)=>{
+    if(!id||name.trim()=="") {
+      toast({title:"please enter name to replace",description:"enter a good batch name"})
+      return;
+    }
+    try {
+     const res= await axiosInstance.put("/api/admin/edit-batchname",{id,name});
+     if(res.status==200){
+      dispatch(updateBatchName({id,name}));
+        setnewBatch("");
+        Swal.fire("Updated!", "Your batch has been  Updated", "success");
+     }
+    } catch (error) {
+      console.log(error);
+    }
+     
+  }
+
+
+  const handleDeleteBatch=async(id:string)=>{
+     Swal.fire({
         title: "Are you sure?",
-        text: `You are about to delete ${name}. This action cannot be undone!`,
+        text: `You are about to delete. This action cannot be undone!`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#3085d6",
         confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
+  }).then(async(result) => {
     if (result.isConfirmed) {
-      
+      try {
+      const res=await axiosInstance.delete(`/api/admin/delete-batch?id=${id}`);
+      if(res.status==200){
+        dispatch(deleteBatch(id));
+         Swal.fire("Deleted!", "Your batch has been deleted.", "success");
+      }
+
+      } catch (error) {
+        console.log(error);
+        return;
+      }
 
       Swal.fire("Deleted!", "Your batch has been deleted.", "success");
     }
-  });
-  }
-
-
-  const handleDeleteBatch=async(id:string)=>{
-    try {
-      await axiosInstance.delete(`/batch/${id}`);
-      dispatch(deleteBatch(id));
-    } catch (error) {
-      console.log(error);
-    }
+  });    
 
 
   }
@@ -76,12 +97,11 @@ const CreateBatch:React.FC = () => {
         });
         return;
       }
-
       const res=await axiosInstance.post("/api/admin/new-branch",{name:newBatch});
       console.log(res);
       if(res.status==201){
         setnewBatch("");
-
+        dispatch(addBatch(res.data.batch));
         toast({
           title:"sucessfully created new Batch",
           description:"created new batch",
@@ -137,9 +157,9 @@ const CreateBatch:React.FC = () => {
                       <Label className='md:text-xl text-blue-800 '>Batch Name:</Label>
                       <p className='md:text-xl pl-3 uppercase line-clamp-1'>{item.batch_name}</p>
                     </div>
-                    
-                    <Button onClick={()=>{handleEditName(item.name)}}> Edit Batch Name</Button>
-                    <Button  onClick={()=>{handleDeleteBatch(item.name)}}>Delete Batch </Button>
+                    <Input value={editBatch} onChange={(e)=>setEditbatch(e.target.value)} placeholder='please enter new name to edit'></Input>
+                    <Button onClick={()=>{handleEditName(item.id,editBatch)}}> Edit Batch Name</Button>
+                    <Button  onClick={()=>{handleDeleteBatch(item.id)}}>Delete Batch </Button>
 
                   </Card>
                 );
