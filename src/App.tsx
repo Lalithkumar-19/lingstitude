@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore";
-
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
