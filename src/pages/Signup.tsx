@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import { axiosInstance } from '@/lib/axios';
+import axiosInstance  from '@/lib/axiosInstance';
+import { toast } from '@/hooks/use-toast';
+import {useNavigate} from 'react-router-dom';
 
 const SignupPage: React.FC = () => {
   // Form state with TypeScript type
   const [formData, setFormData] = useState<{
-    name: string;
+    fullName: string;
     email: string;
     password: string;
     agreeToTerms: boolean;
     accountType: 'user' | 'admin';
   }>({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
     agreeToTerms: false,
     accountType: 'user',
   });
 
-  // Zustand store for signup
-  const { signup, isSigningUp, googleLogin } = useAuthStore();
+  const navigate=useNavigate();
 
   // Handle input change for all types of input (including checkbox and radio buttons)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,35 +41,55 @@ const SignupPage: React.FC = () => {
       alert('You must agree to the terms and conditions.');
       return;
     }
-
-    try {
-      await signup({
-        fullName: formData.name,
-        email: formData.email,
-        password: formData.password,
-        accountType: formData.accountType,
-      });
-    } catch (error) {
-      console.error('Signup failed:', error);
+    if(formData.password.length<6){
+      toast({title:"password must be atleast 6 characters"});
+      return;
     }
+    const res=await  axiosInstance.post("/api/auth/signup",formData);
+   if(res.status==201){
+    toast({title:"Registered Success",description:"success"});
+    navigate("/login");
+   }
+    else{
+      toast({title:"signup Failed",description: res.data.msg});
+    }
+
+    
   };
 
   // ✅ Handle Google OAuth Signup
-  const handleGoogleSignup = useGoogleLogin({
+  const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        console.log("Google Token Response:", tokenResponse);
         const { access_token } = tokenResponse;
-        const userInfo = await axiosInstance.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-
-        await googleLogin(access_token);
+  
+        if (!access_token) {
+          console.error("No Access Token received!");
+          return;
+        }
+  
+        // ✅ Fetch ID token from Google's tokeninfo endpoint
+        const tokenInfo = await axiosInstance.get(
+          `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
+        );
+  
+        const idToken = tokenInfo.data.id_token;
+        if (!idToken) {
+          console.error("No ID Token received!");
+          return;
+        }
+  
+        console.log("ID Token:", idToken);
+  
+        // ✅ Send ID token to backend using Zustand's googleLogin function
+        
       } catch (error) {
-        console.error('Google Signup Error:', error);
+        console.error("Google Login Error:", error);
       }
     },
-    onError: () => {
-      console.error('Google Signup Failed');
+    onError: (error) => {
+      console.error("Google Login Failed:", error);
     },
   });
 
@@ -85,7 +105,7 @@ const SignupPage: React.FC = () => {
 
           {/* ✅ Google Signup Button */}
           <button
-            onClick={handleGoogleSignup}
+            onClick={() => handleGoogleLogin()}
             className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-3 mb-4 text-gray-700 hover:bg-gray-50 transition-colors"
             type="button"
           >
@@ -132,8 +152,8 @@ const SignupPage: React.FC = () => {
               <input
                 type="text"
                 id="name"
-                name="name"
-                value={formData.name}
+                name="fullName"
+                value={formData.fullName} 
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md"
                 required
@@ -219,12 +239,9 @@ const SignupPage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-blue-600 text-white p-2 rounded-md ${
-                isSigningUp ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
-              }`}
-              disabled={isSigningUp}
+              className={`w-full bg-blue-600 text-white p-2 rounded-md`} 
             >
-              {isSigningUp ? 'Signing up...' : 'Sign Up'}
+              Sign Up
             </button>
           </form>
 

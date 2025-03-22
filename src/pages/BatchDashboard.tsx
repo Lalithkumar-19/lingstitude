@@ -108,7 +108,7 @@ const BatchDashboard = () => {
                     src={`https://www.youtube.com/embed/${video.videoUrl.split("v=")[1]}?autoplay=0`} // Autoplay is disabled initially
                     allowFullScreen
                   ></iframe>
-                  <button
+                  <Button
                     onClick={() => handlePlayClick(video.videoUrl)}
                     className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md hover:bg-opacity-70"
                   >
@@ -132,7 +132,7 @@ const BatchDashboard = () => {
                         d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))
@@ -169,8 +169,8 @@ const BatchDashboard = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-3xl relative">
-            <button
-              onClick={closeModal}
+            <Button
+            onClick={closeModal}
               className="absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300"
             >
               <svg
@@ -187,7 +187,7 @@ const BatchDashboard = () => {
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
             <iframe
               className="w-full h-96 rounded-md"
               src={`https://www.youtube.com/embed/${selectedVideo.split("v=")[1]}?autoplay=1`} // Autoplay is enabled in the modal

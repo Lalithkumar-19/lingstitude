@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useEffect } from "react";
-import { useAuthStore } from "./store/useAuthStore";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -18,26 +17,35 @@ import Login from "./pages/Login";
 import BatchDashboard from "./pages/BatchDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./redux/store";
+import { addUser, adminToggle } from "./redux/userSlice";
 
 const queryClient = new QueryClient();
 
-const InitAuthNavigation = () => {
-  const navigate = useNavigate();
-  const setNavigate = useAuthStore((state) => state.setNavigate);
 
-  useEffect(() => {
-    setNavigate(navigate);
-  }, [navigate, setNavigate]);
-
-  return null;
-};
 
 const App = () => {
+  const dispatch=useDispatch<AppDispatch>();
+  const admin=useSelector((state:RootState)=>state.user.isAdmin);
+
+  useEffect(() => {
+    const user=localStorage.getItem("User");
+    const admin=localStorage.getItem("Admintoken");
+    if(user){
+      dispatch(addUser(JSON.parse(user)));
+    }
+    if(admin){
+      dispatch(adminToggle(true));
+    }
+  }, []);
+  
+
   const googleClientId =
     "919259008575-rqhcrai07q87bc2v6fh4jd2kf405gk8h.apps.googleusercontent.com";
 
   if (!googleClientId) {
-    console.error("⚠️ Missing GOOGLE_CLIENT_ID in environment file.");
+    console.error("Missing GOOGLE_CLIENT_ID in environment file.");
   }
 
   return (
@@ -45,15 +53,15 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider>
-            {/* ✅ UI Notifications */}
+            {/* UI Notifications */}
             <Toaster />
             <Sonner position="top-right" />
             
             <BrowserRouter>
-              <InitAuthNavigation />
+              
               <Navbar />
               <Routes>
-                {/* ✅ Public Routes */}
+                {/* Public Routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/live-classes" element={<LiveClasses />} />
                 <Route path="/batches" element={<BatchContent />} />
@@ -62,10 +70,11 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/batch" element={<BatchDashboard />} />
 
-                {/* ✅ Admin Route */}
+                {/* Admin Route */}
+                {admin&&
                 <Route path="/admin" element={<AdminDashboard />} />
-
-                {/* ✅ Catch-all Route */}
+                }
+                {/* Catch-all Route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />

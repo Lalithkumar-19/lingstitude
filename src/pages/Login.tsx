@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useAuthStore } from "../store/useAuthStore";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios"; // ✅
-import { axiosInstance } from "@/lib/axios";
+import axiosInstance from "@/lib/axiosInstance";
+import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { addUser, adminToggle } from "@/redux/userSlice";
 
 const LoginPage: React.FC = () => {
   // ✅ Form state with TypeScript types
+
+  const dispatch = useDispatch<AppDispatch>();
+
   const [formData, setFormData] = useState<{
     email: string;
     password: string;
@@ -21,17 +27,7 @@ const LoginPage: React.FC = () => {
     accountType: "user",
   });
 
-  const navigate=useNavigate();
-
-  // ✅ Zustand store hooks
-  const { login, isLoggingIn, googleLogin, setNavigate } = useAuthStore();
-
-// ✅ Set navigate when the component loads
-useEffect(() => {
-  setNavigate(navigate);
-}, [navigate]);
-
-
+  const navigate = useNavigate();
   // ✅ Handle input changes (including checkbox & radio)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -44,20 +40,32 @@ useEffect(() => {
   // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.agreeToTerms) {
-      alert("You must agree to the terms and conditions.");
-      return;
-    }
-
-    try {
-      await login({
-        email: formData.email,
-        password: formData.password,
-        accountType: formData.accountType,
-      });
-    } catch (error) {
-      console.error("Login failed:", error);
+    if (formData.accountType == "user") {
+      const res = await axiosInstance.post("/api/auth/login", formData);
+      if (res.status == 200) {
+        const { token, user } = res.data;
+        localStorage.setItem("Usertoken", token);
+        dispatch(addUser(res.data.user));
+        localStorage.setItem("User", JSON.stringify(user));
+        toast({ title: "Login Success", description: "success" });
+        navigate("/");
+      } else {
+        toast({
+          title: "Login Failed,may be you have't registered",
+          description: "error",
+        });
+      }
+    } else if (formData.accountType == "admin") {
+      const res = await axiosInstance.post("/api/admin/login", formData);
+      if (res.status == 200) {
+        const token = res.data;
+        localStorage.setItem("Admintoken", token);
+        dispatch(adminToggle(true));
+        toast({ title: "Login Success", description: "success" });
+        navigate("/admin");
+      } else {
+        toast({ title: "Hey,you are not Admin...", description: "error" });
+      }
     }
   };
 
@@ -67,27 +75,26 @@ useEffect(() => {
       try {
         console.log("Google Token Response:", tokenResponse);
         const { access_token } = tokenResponse;
-  
+
         if (!access_token) {
           console.error("No Access Token received!");
           return;
         }
-  
+
         // ✅ Fetch ID token from Google's tokeninfo endpoint
         const tokenInfo = await axios.get(
           `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
         );
-  
+
         const idToken = tokenInfo.data.id_token;
         if (!idToken) {
           console.error("No ID Token received!");
           return;
         }
-  
+
         console.log("ID Token:", idToken);
-  
+
         // ✅ Send ID token to backend using Zustand's googleLogin function
-        await googleLogin(idToken);
       } catch (error) {
         console.error("Google Login Error:", error);
       }
@@ -96,13 +103,6 @@ useEffect(() => {
       console.error("Google Login Failed:", error);
     },
   });
-  
-  
-  
-  
-  
-  
-  
 
   return (
     <div>
@@ -244,14 +244,10 @@ useEffect(() => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-blue-600 text-white p-2 rounded-md ${
-                isLoggingIn
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-blue-700"
+              className={`w-full bg-blue-600 text-white p-2 rounded-md 
               }`}
-              disabled={isLoggingIn}
             >
-              {isLoggingIn ? "Logging in..." : "Login"}
+              Login
             </button>
           </form>
 

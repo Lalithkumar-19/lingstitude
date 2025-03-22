@@ -1,13 +1,17 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, User2Icon, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const user = useSelector((state: RootState) => state.user.user);
+  const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,14 +30,12 @@ const Navbar = () => {
     <header
       className={cn(
         "fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out py-4",
-        scrolled
-          ? "bg-white/80 backdrop-blur-lg shadow-sm"
-          : "bg-transparent"
+        scrolled ? "bg-white/80 backdrop-blur-lg shadow-sm" : "bg-transparent"
       )}
     >
       <div className="container flex items-center justify-between">
-        <a 
-          href="/" 
+        <a
+          href="/"
           className="flex items-center space-x-2 relative z-10"
           aria-label="Lingstitude Logo"
         >
@@ -44,26 +46,54 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center space-x-8">
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            <a href="#" className="text-foreground/80 hover:text-foreground transition-colors">
+            <a
+              href="#"
+              className="text-foreground/80 hover:text-foreground transition-colors"
+            >
               Home
             </a>
-            <a href="live-classes" className="text-foreground/80 hover:text-foreground transition-colors">
+            <a
+              href="live-classes"
+              className="text-foreground/80 hover:text-foreground transition-colors"
+            >
               Live Classes
             </a>
-            <a href="#about" className="text-foreground/80 hover:text-foreground transition-colors">
+            <a
+              href="#about"
+              className="text-foreground/80 hover:text-foreground transition-colors"
+            >
               About Us
             </a>
-            <a href="#testimonials" className="text-foreground/80 hover:text-foreground transition-colors">
+            <a
+              href="#testimonials"
+              className="text-foreground/80 hover:text-foreground transition-colors"
+            >
               Testimonials
             </a>
             {/* <a href="signup" className="text-foreground/80 hover:text-foreground transition-colors">
               Sign Up
             </a> */}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white
+                 "
+              >
+                Admin panel
+              </Link>
+            )}
+            {!isAdmin &&
+              (user?.fullName ? (
+                <Link to="/dashboard" className="flex items-center space-x-2">
+                  <User2Icon className="text-blue-500 line-clamp-1" />
+                  {user.fullName}
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button>Login</Button>
+                </Link>
+              ))}
           </nav>
-          <Link to="/login">
-            <Button>Login</Button>
-          </Link>
-          
         </div>
 
         <button
@@ -83,41 +113,48 @@ const Navbar = () => {
           }`}
         >
           <nav className="flex flex-col space-y-8 text-lg font-medium">
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Home
             </a>
-            <a 
-              href="live-classes" 
+            <a
+              href="live-classes"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Live Classes
             </a>
-            <a 
-              href="#about" 
+            <a
+              href="#about"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               About Us
             </a>
-            <a 
-              href="#testimonials" 
+            <a
+              href="#testimonials"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Testimonials
             </a>
-             
-             
-            
-            </nav>
-            <Link to="/signup">
-            <Button className="w-full mt-6">Sign Up</Button>
-          </Link>
+
+            {user && user.fullName ? (
+              // Show Dashboard if user exists and has fullName
+              <Link to="/dashboard" className="flex items-center space-x-2">
+                <User2Icon className="text-blue-500 line-clamp-1" />
+                {user.fullName}
+              </Link>
+            ) : (
+              // Show Login if no user is found
+              <Link to="/login">
+                <Button>Login</Button>
+              </Link>
+            )}
+          </nav>
         </div>
       </div>
     </header>
