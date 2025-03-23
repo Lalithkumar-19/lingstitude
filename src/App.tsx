@@ -41,15 +41,10 @@ const App = () => {
   }, []);
   
 
-  const googleClientId =
-    "919259008575-rqhcrai07q87bc2v6fh4jd2kf405gk8h.apps.googleusercontent.com";
-
-  if (!googleClientId) {
-    console.error("Missing GOOGLE_CLIENT_ID in environment file.");
-  }
+  
 
   return (
-    <GoogleOAuthProvider clientId={googleClientId}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider>

@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios"; // ✅
+import { GoogleLogin } from "@react-oauth/google";
 import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { addUser, adminToggle } from "@/redux/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   // ✅ Form state with TypeScript types
@@ -70,39 +69,32 @@ const LoginPage: React.FC = () => {
   };
 
   // ✅ Google OAuth Login Handling
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        console.log("Google Token Response:", tokenResponse);
-        const { access_token } = tokenResponse;
+  
+  const handleSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
+  
+    try {
+      const { data } = await axiosInstance.post("/api/auth/google-login", { token });
+      
+      // Save user and token properly
+       // Save user info
+      console.log(data);
+      localStorage.setItem("token", data.token); // Save JWT token
+      dispatch(addUser(data.user));
+        localStorage.setItem("User", JSON.stringify(data.user));
+      toast({ title: "Login Success", description: "success" });
+      navigate("/");
+    } catch (error) {
+      console.error("Login Error:", error.response?.data || error.message);
+      alert("❌ Login failed!");
+    }
+  };
+  
+  const handleFailure = () => {
+    alert("❌ Login failed! Please try again.");
+  };
+  
 
-        if (!access_token) {
-          console.error("No Access Token received!");
-          return;
-        }
-
-        // ✅ Fetch ID token from Google's tokeninfo endpoint
-        const tokenInfo = await axios.get(
-          `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
-        );
-
-        const idToken = tokenInfo.data.id_token;
-        if (!idToken) {
-          console.error("No ID Token received!");
-          return;
-        }
-
-        console.log("ID Token:", idToken);
-
-        // ✅ Send ID token to backend using Zustand's googleLogin function
-      } catch (error) {
-        console.error("Google Login Error:", error);
-      }
-    },
-    onError: (error) => {
-      console.error("Google Login Failed:", error);
-    },
-  });
 
   return (
     <div>
@@ -116,7 +108,8 @@ const LoginPage: React.FC = () => {
           </h1>
 
           {/* Google Login Button */}
-          <button
+          <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
+          {/* <button
             onClick={() => handleGoogleLogin()}
             className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-3 mb-4 text-gray-700 hover:bg-gray-50 transition-colors"
             type="button"
@@ -145,7 +138,7 @@ const LoginPage: React.FC = () => {
               />
             </svg>
             Continue with Google
-          </button>
+          </button> */}
 
           {/* Divider */}
           <div className="flex items-center my-3">
