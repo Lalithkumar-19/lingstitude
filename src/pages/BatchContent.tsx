@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Video, Calendar, Download, Clock, BookOpen } from "lucide-react";
+import { FileText, Video, Calendar, Download, Clock, BookOpen, ViewIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axiosInstance";
 import { useSelector } from "react-redux";
@@ -304,69 +304,61 @@ console.log(batchData, "batch");
             </TabsList>
             
             <TabsContent value="materials" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5" />
-                    Learning Materials
-                  </CardTitle>
-                  <CardDescription>
-                    Access all course modules and learning resources
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="single" collapsible className="w-full">
-                    {batchDetails.modules.map((module) => (
-                      <AccordionItem key={module.id} value={module.id}>
-                        <AccordionTrigger className="text-left">
-                          <div>
-                            <h3 className="font-medium">{module.title}</h3>
-                            <p className="text-sm text-muted-foreground">{module.description}</p>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-3 pt-1">
-                            {module.materials.map((material) => (
-                              <div 
-                                key={material.id} 
-                                className="flex items-center justify-between p-3 rounded-lg border"
-                              >
-                                <div className="flex items-center gap-3">
-                                  {material.type === "pdf" && (
-                                    <FileText className="h-5 w-5 text-red-500" />
-                                  )}
-                                  {material.type === "video" && (
-                                    <Video className="h-5 w-5 text-blue-500" />
-                                  )}
-                                  {material.type === "presentation" && (
-                                    <FileText className="h-5 w-5 text-orange-500" />
-                                  )}
-                                  <div>
-                                    <p className="font-medium">{material.title}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      Added on {new Date(material.dateAdded).toLocaleDateString()}
-                                      {material.size && ` • ${material.size}`}
-                                    </p>
-                                  </div>
-                                </div>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => handleDownload(material)}
-                                >
-                                  <Download className="h-4 w-4 mr-1" />
-                                  Download
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            </TabsContent>
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <BookOpen className="h-5 w-5" />
+        Learning Materials
+      </CardTitle>
+      <CardDescription>
+        Access all course modules and learning resources.
+      </CardDescription>
+    </CardHeader>
+
+    <CardContent>
+      <Accordion type="single" collapsible className="w-full">
+        {/* Loop through course_content to dynamically render each module */}
+        {batchData?.course_content?.map((module, index) => (
+          <AccordionItem key={index} value={module._id}>
+            <AccordionTrigger className="text-left">
+              <h3 className="font-medium">{module.moduleName}</h3>
+            </AccordionTrigger>
+
+            <AccordionContent>
+              <div className="space-y-3 pt-1">
+                {/* Loop through materials inside each module */}
+                {module.data.map((material, materialIndex) => (
+                  <div
+                    key={materialIndex}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-red-500" />
+                      <div>
+                        <p className="font-medium">{material.title}</p>
+                      </div>
+                    </div>
+
+                    {/* Button to download or view the material */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(material.fileUrl, "_blank")}
+                    >
+                      <ViewIcon className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </CardContent>
+  </Card>
+</TabsContent>
+
             
             <TabsContent value="classes" className="mt-6">
   <Card>
