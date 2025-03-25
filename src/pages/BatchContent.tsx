@@ -2,13 +2,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Video, Calendar, Download, Clock, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import axiosInstance from "@/lib/axiosInstance";
 
 type BatchDetails = {
   id: string;
@@ -50,14 +50,38 @@ type ClassSession = {
 };
 
 const BatchContent = () => {
+
   const [searchParams] = useSearchParams();
   const batchId = searchParams.get("id") || "batch-2023-A"; // Default to first batch if none specified
   const [batchDetails, setBatchDetails] = useState<BatchDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+
+
+  
+  const [batchData, setBatchData] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null); // State to track the selected video
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+
+  useEffect(() => {
+    const fetchBatchDetails = async () => {
+      try {
+        const res = await axiosInstance.get("api/batch/get-batch?batch_name=Batch 1");
+        console.log(res.data.data,"datacfcjknj");
+        if (res.status === 200) {
+          setBatchData(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching batch details", error);
+      }
+    };
+    fetchBatchDetails();
+  }, []);
+
+
   useEffect(() => {
     document.title = "Batch Content | Lingstitude";
-    
+
     // Fetch batch details - this would come from your API in a real app
     const fetchBatchDetails = async () => {
       setIsLoading(true);
@@ -221,7 +245,7 @@ const BatchContent = () => {
             </div>
           </div>
         </main>
-        <Footer />
+        
       </div>
     );
   }
@@ -229,23 +253,23 @@ const BatchContent = () => {
   if (!batchDetails) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
+        
         <main className="flex-1 container mx-auto py-12 px-4">
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold mb-2">Batch not found</h2>
             <p className="text-muted-foreground">The requested batch could not be found.</p>
           </div>
         </main>
-        <Footer />
+        
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
+    <div className="max-h-screen flex flex-col">
+      
       <main className="flex-1 container mx-auto py-12 px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">{batchDetails.name}</h1>
             <p className="text-lg text-muted-foreground mb-4">
@@ -331,115 +355,105 @@ const BatchContent = () => {
             </TabsContent>
             
             <TabsContent value="classes" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Video className="h-5 w-5" />
-                    Scheduled Classes
-                  </CardTitle>
-                  <CardDescription>
-                    View your upcoming and past classes
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-3">Upcoming Classes</h3>
-                      {batchDetails.upcomingClasses.length > 0 ? (
-                        <div className="space-y-3">
-                          {batchDetails.upcomingClasses.map((classSession) => (
-                            <div 
-                              key={classSession.id} 
-                              className="p-4 rounded-lg border"
-                            >
-                              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
-                                <h4 className="font-medium">{classSession.title}</h4>
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                                  <span>{new Date(classSession.date).toLocaleDateString()}</span>
-                                  <Clock className="h-4 w-4 text-muted-foreground ml-2" />
-                                  <span>{classSession.time} • {classSession.duration}</span>
-                                </div>
-                              </div>
-                              <p className="text-sm text-muted-foreground mb-3">
-                                {classSession.description}
-                              </p>
-                              <div className="flex justify-between items-center">
-                                <span className="text-sm">Teacher: {classSession.teacher}</span>
-                                <Button variant="default" size="sm">
-                                  <Calendar className="h-4 w-4 mr-1" />
-                                  Add to Calendar
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-muted-foreground">No upcoming classes scheduled.</p>
-                      )}
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <Video className="h-5 w-5" />
+        Scheduled Classes
+      </CardTitle>
+      <CardDescription>View your upcoming and past classes</CardDescription>
+    </CardHeader>
+
+    <CardContent>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium mb-3">Upcoming Classes</h3>
+
+          {batchData.scheduledClasses.filter(classSession => new Date(classSession.date) > new Date()).length > 0 ? (
+            <div className="space-y-3">
+              {batchData.scheduledClasses
+                .filter(classSession => new Date(classSession.date) > new Date())
+                .map((classSession) => (
+                  <div key={classSession.id} className="p-4 rounded-lg border">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
+                      <h4 className="font-medium">{classSession.title}</h4>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span>{new Date(classSession.date).toLocaleDateString()}</span>
+                        <Clock className="h-4 w-4 text-muted-foreground ml-2" />
+                        <span>{classSession.time} • {classSession.duration}</span>
+                      </div>
                     </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-medium mb-3">Past Classes</h3>
-                      {batchDetails.completedClasses.length > 0 ? (
-                        <div className="space-y-3">
-                          {batchDetails.completedClasses.map((classSession) => (
-                            <div 
-                              key={classSession.id} 
-                              className="p-4 rounded-lg border"
-                            >
-                              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
-                                <h4 className="font-medium">{classSession.title}</h4>
-                                <div className="flex items-center gap-2 text-sm">
-                                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                                  <span>{new Date(classSession.date).toLocaleDateString()}</span>
-                                  <Clock className="h-4 w-4 text-muted-foreground ml-2" />
-                                  <span>{classSession.time} • {classSession.duration}</span>
-                                </div>
-                              </div>
-                              
-                              <p className="text-sm text-muted-foreground mb-3">
-                                {classSession.description}
-                              </p>
-                              
-                              <div className="flex flex-wrap gap-2 mb-3">
-                                {classSession.recording && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleViewRecording(classSession)}
-                                  >
-                                    <Video className="h-4 w-4 mr-1" />
-                                    View Recording
-                                  </Button>
-                                )}
-                                
-                                {(classSession.materials && classSession.materials.length > 0) && (
-                                  <Button variant="outline" size="sm">
-                                    <FileText className="h-4 w-4 mr-1" />
-                                    Class Materials
-                                  </Button>
-                                )}
-                              </div>
-                              
-                              <div className="text-sm">
-                                Teacher: {classSession.teacher}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-muted-foreground">No past classes yet.</p>
-                      )}
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {classSession.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Teacher: {classSession.teacher}</span>
+                      <Button variant="default" size="sm">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <a href={classSession.link}>Join Class</a>
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No upcoming classes scheduled.</p>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-lg font-medium mb-3">Past Classes</h3>
+
+          {batchData.scheduledClasses.filter(classSession => new Date(classSession.date) <= new Date()).length > 0 ? (
+            <div className="space-y-3">
+              {batchData.scheduledClasses
+                .filter(classSession => new Date(classSession.date) <= new Date())
+                .map((classSession) => (
+                  <div key={classSession.id} className="p-4 rounded-lg border">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
+                      <h4 className="font-medium">{classSession.title}</h4>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span>{new Date(classSession.date).toLocaleDateString()}</span>
+                        <Clock className="h-4 w-4 text-muted-foreground ml-2" />
+                        <span>{classSession.time} • {classSession.duration}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {classSession.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {classSession.recording && (
+                        <Button variant="outline" size="sm" onClick={() => handleViewRecording(classSession)}>
+                          <Video className="h-4 w-4 mr-1" />
+                          View Recording
+                        </Button>
+                      )}
+                      {(classSession.materials && classSession.materials.length > 0) && (
+                        <Button variant="outline" size="sm">
+                          <FileText className="h-4 w-4 mr-1" />
+                          Class Materials
+                        </Button>
+                      )}
+                    </div>
+                    <div className="text-sm">Teacher: {classSession.teacher}</div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No past classes yet.</p>
+          )}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
           </Tabs>
         </div>
       </main>
-      <Footer />
+      
     </div>
   );
 };

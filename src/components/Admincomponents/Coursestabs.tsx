@@ -37,6 +37,7 @@ const Coursestabs:React.FC = () => {
   const [newClassTitle, setNewClassTitle] = useState("");
   const [newClassDate, setNewClassDate] = useState("");
   const [newClassTime, setNewClassTime] = useState("");
+  const [newClassLink, setNewClassLink] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
   const [title,setTitle]=useState<string>("");
 
@@ -127,6 +128,7 @@ console.log("sc d",scheduleData);
       title:newClassTitle,
       date:newClassDate,
       time:newClassTime,
+      link:newClassLink,
       description:newClassDescription,
     });
     if(res.status==201){
@@ -305,6 +307,17 @@ console.log("sc d",scheduleData);
                           required
                         />
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="class-link">Zoom Link</Label>
+                      <Input
+                        id="class-link"
+                        value={newClassLink}
+                        onChange={(e) => setNewClassLink(e.target.value)}
+                        placeholder="Place the zoom link here"
+                        required
+                      />
                     </div>
                     
                     <div className="space-y-2">

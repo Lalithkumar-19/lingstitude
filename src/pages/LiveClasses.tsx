@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, Calendar, Clock, Users, BookOpen } from "lucide-react";
@@ -160,7 +159,7 @@ const LiveClasses = () => {
           )}
         </div>
       </main>
-      <Footer />
+      
     </div>
   );
 };

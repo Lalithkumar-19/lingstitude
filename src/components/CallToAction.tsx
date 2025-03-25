@@ -34,9 +34,9 @@ const CallToAction = () => {
                     Start Your Journey <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button 
-                    variant="outline" 
+                    
                     size="lg" 
-                    className="border-white text-white hover:bg-white/10 font-medium"
+                    className="bg-brand-500 border-white text-white hover:bg-white/10 font-medium"
                   >
                     Book a Consultation
                   </Button>
@@ -64,6 +64,15 @@ const CallToAction = () => {
                       type="email" 
                       id="email" 
                       placeholder="Email Address" 
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only" htmlFor="email">Email Address</label>
+                    <input 
+                      type="number" 
+                      id="number" 
+                      placeholder="Phone Number" 
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
                     />
                   </div>

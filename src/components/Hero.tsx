@@ -25,7 +25,7 @@ const Hero = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="font-medium">
-                Explore Courses <ArrowRight className="ml-2 h-4 w-4" />
+                Explore More <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button variant="outline" size="lg" className="font-medium">
                 Learn More
@@ -63,7 +63,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end">
                 <div className="p-6 text-white">
                   <span className="px-2 py-1 bg-brand-600 text-white text-xs font-medium rounded">FEATURED</span>
-                  <h3 className="text-xl font-semibold mt-2">Business English Communication</h3>
+                  <h3 className="text-xl font-semibold mt-2">English Communication as a Language</h3>
                   <p className="text-sm text-white/80">Master professional communication skills</p>
                 </div>
               </div>

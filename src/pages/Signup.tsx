@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axiosInstance  from '@/lib/axiosInstance';
 import { toast } from '@/hooks/use-toast';
@@ -254,7 +253,7 @@ const SignupPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, User2Icon, X } from "lucide-react";
+import { LogOutIcon, Menu, User2Icon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -25,6 +25,13 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  
+  const handleLogout=()=>{
+    localStorage.removeItem("Usertoken");
+    localStorage.removeItem("User");
+    window.location.href="/";
+  }
+
 
   return (
     <header
@@ -40,24 +47,27 @@ const Navbar = () => {
           aria-label="Lingstitude Logo"
         >
           <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-800">
-            Lingstitude
+            Lingstitute
           </span>
         </a>
 
         <div className="hidden md:flex items-center space-x-8">
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <a
-              href="#"
+              href="/"
               className="text-foreground/80 hover:text-foreground transition-colors"
             >
               Home
             </a>
-            <a
-              href="live-classes"
-              className="text-foreground/80 hover:text-foreground transition-colors"
-            >
-              Live Classes
-            </a>
+            {user && user.isStudent && (
+              <a
+                href="batches"
+                className="text-foreground/80 hover:text-foreground transition-colors"
+              >
+                Batches
+              </a>
+            )}
+
             <a
               href="#about"
               className="text-foreground/80 hover:text-foreground transition-colors"
@@ -84,15 +94,19 @@ const Navbar = () => {
             )}
             {!isAdmin &&
               (user?.fullName ? (
+                <>
                 <Link to="/dashboard" className="flex items-center space-x-2">
                   <User2Icon className="text-blue-500 line-clamp-1" />
                   {user.fullName}
                 </Link>
+                <LogOutIcon className="cursor-pointer" onClick={handleLogout}/>
+                </>
               ) : (
                 <Link to="/login">
                   <Button>Login</Button>
                 </Link>
               ))}
+              
           </nav>
         </div>
 

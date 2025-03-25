@@ -59,11 +59,11 @@ const App = () => {
                 {/* Public Routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/live-classes" element={<LiveClasses />} />
-                <Route path="/batches" element={<BatchContent />} />
+                <Route path="/batches" element={<BatchDashboard />} />
                 <Route path="/practice-partner" element={<PracticePartner />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/batch" element={<BatchDashboard />} />
+                
 
                 {/* Admin Route */}
                 {admin&&

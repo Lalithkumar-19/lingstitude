@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { GoogleLogin } from "@react-oauth/google";
 import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "@/hooks/use-toast";
@@ -79,7 +78,7 @@ const LoginPage: React.FC = () => {
       // Save user and token properly
        // Save user info
       console.log(data);
-      localStorage.setItem("token", data.token); // Save JWT token
+      localStorage.setItem("Usertoken", data.token); // Save JWT token
       dispatch(addUser(data.user));
         localStorage.setItem("User", JSON.stringify(data.user));
       toast({ title: "Login Success", description: "success" });
@@ -253,8 +252,8 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Footer */}
-      <Footer />
+      
+      
     </div>
   );
 };

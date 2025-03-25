@@ -21,6 +21,7 @@ export type ScheduleTypes = {
   description: string;
   date: string;
   time: string;
+  link: string;
   _id:string;
 };
 
@@ -30,6 +31,7 @@ export const ScheduleCard: React.FC<ScheduleTypes> = ({
   description,
   date,
   time,
+  link,
   _id
 
 }) => {
@@ -83,6 +85,11 @@ export const ScheduleCard: React.FC<ScheduleTypes> = ({
             <Label>Time</Label>
             <p className="text-gray-600">{time}</p>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Zoom Link</Label>
+          <p className="text-gray-600 line-clamp-2 h-15">{link}</p>
         </div>
 
         <div className="space-y-2">
