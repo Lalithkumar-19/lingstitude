@@ -20,6 +20,7 @@ const batchSlice=createSlice({
         updateBatchName:(state,action)=>{
             const index=state.batches.findIndex(item=>item.id==action.payload.id);
             state.batches[index].batch_name=action.payload.name;
+            state.batches[index].batch_description=action.payload.batch_description;
 
         }
     },

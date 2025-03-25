@@ -77,12 +77,14 @@ const BatchContent = () => {
     };
     fetchBatchDetails();
   }, []);
+  console.log(batchData,"batch");
+
+
 
 
   useEffect(() => {
     document.title = "Batch Content | Lingstitude";
 
-    // Fetch batch details - this would come from your API in a real app
     const fetchBatchDetails = async () => {
       setIsLoading(true);
       
@@ -212,6 +214,7 @@ const BatchContent = () => {
     fetchBatchDetails();
   }, [batchId]);
 
+
   const handleDownload = (material: Material) => {
     // In a real app, this would trigger a file download
     toast({
@@ -219,6 +222,7 @@ const BatchContent = () => {
       description: `Downloading ${material.title}`,
     });
   };
+
 
   const handleViewRecording = (classSession: ClassSession) => {
     // In a real app, this would open the recording
@@ -230,9 +234,10 @@ const BatchContent = () => {
     }
   };
 
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="flex flex-col">
         <Navbar />
         <main className="flex-1 container mx-auto py-12 px-4">
           <div className="animate-pulse space-y-6 max-w-4xl mx-auto">
@@ -266,7 +271,7 @@ const BatchContent = () => {
   }
 
   return (
-    <div className="max-h-screen flex flex-col">
+    <div className="flex flex-col mt-100">
       
       <main className="flex-1 container mx-auto py-12 px-4">
         <div className="w-full mx-auto">
@@ -388,7 +393,7 @@ const BatchContent = () => {
                       {classSession.description}
                     </p>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Teacher: {classSession.teacher}</span>
+                      <span/>
                       <Button variant="default" size="sm">
                         <Calendar className="h-4 w-4 mr-1" />
                         <a href={classSession.link}>Join Class</a>
@@ -437,7 +442,6 @@ const BatchContent = () => {
                         </Button>
                       )}
                     </div>
-                    <div className="text-sm">Teacher: {classSession.teacher}</div>
                   </div>
                 ))}
             </div>

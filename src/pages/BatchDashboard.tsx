@@ -45,31 +45,7 @@ const BatchDashboard = () => {
 
 
 
-      
-
-      {/* PDF Course Materials Section */}
-      {/* <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            <FileText className="w-5 h-5" /> PDF Course Materials
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {batchData?.course_content.length ? (
-            batchData.course_content.map((pdf, idx) => (
-              <div key={idx} className="p-2 border-b flex justify-between">
-                <span>{pdf.title}</span>
-                <a href={pdf.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  Download
-                </a>
-              </div>
-            ))
-          ) : (
-            <p>No PDFs available.</p>
-          )}
-        </CardContent>
-      </Card> */}
-
+  
       {/* Modal for Selected Video */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -109,13 +85,13 @@ const BatchDashboard = () => {
 
 
       {/* Video Content Section */}
-      <Card className="mb-6">
+      <Card className=" mb-10m mt-100">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">
             <Video className="w-5 h-5" /> Video Content
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <CardContent className="flex flex-row w-full overflow-x-scroll gap-4 ">
           {batchData?.course_videos.length ? (
             batchData.course_videos.map((video, idx) => (
               <div

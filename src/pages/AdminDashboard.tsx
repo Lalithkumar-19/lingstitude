@@ -41,7 +41,7 @@ const AdminDashboard = () => {
  
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col">
       <Navbar />
       <main className="flex-1 container mx-auto py-12 mt-10 px-4">
         <div className="max-w-5xl mx-auto">
