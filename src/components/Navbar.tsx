@@ -69,7 +69,7 @@ const Navbar = () => {
             )}
 
             <a
-              href="#about"
+              href="about"
               className="text-foreground/80 hover:text-foreground transition-colors"
             >
               About Us

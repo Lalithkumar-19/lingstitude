@@ -38,7 +38,7 @@ const Features = () => {
             <span className="text-xs font-medium text-brand-700">Our Advantage</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Why Professionals Choose Lingstitute
+            Why Lingstitute
           </h2>
           <p className="text-lg text-muted-foreground text-balance">
             Our English training programs are specifically designed for career-minded individuals looking to gain a competitive edge in the global job market.

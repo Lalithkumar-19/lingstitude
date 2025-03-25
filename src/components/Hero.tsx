@@ -21,15 +21,15 @@ const Hero = () => {
               Elevate Your <span className="text-brand-600">Career</span> With Professional English
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-lg text-balance">
-              Specialized English communication training for graduates and professionals to accelerate your career path and stand out in the job market.
+              Specialized English communication training for under-graduates/graduates and working professionals to accelerate your career path and stand out in the job market.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="font-medium">
-                Explore More <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="lg" className="font-medium">
+            <a href="courses"><Button size="lg" className="font-medium">
+                  Explore Courses <ArrowRight className="ml-2 h-4 w-4" />
+              </Button></a>
+              <a href="about"><Button variant="outline" size="lg" className="font-medium">
                 Learn More
-              </Button>
+              </Button></a>
             </div>
             <div className="mt-8 flex items-center text-sm text-muted-foreground">
               <div className="flex -space-x-2 mr-3">
@@ -72,7 +72,7 @@ const Hero = () => {
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center p-2 saturate-hover">
               <div className="text-center">
                 <span className="block text-xs text-brand-600 font-medium">Starting at</span>
-                <span className="text-xl font-bold">$199</span>
+                <span className="text-xl font-bold">₹999</span>
               </div>
             </div>
           </div>

@@ -20,6 +20,8 @@ import Footer from "./components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "./redux/store";
 import { addUser, adminToggle } from "./redux/userSlice";
+import About from "./pages/About";
+import Courses from "./pages/Courses";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,8 @@ const App = () => {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/courses" element={<Courses />} />
                 <Route path="/live-classes" element={<LiveClasses />} />
                 <Route path="/batches" element={<BatchDashboard />} />
                 <Route path="/practice-partner" element={<PracticePartner />} />
