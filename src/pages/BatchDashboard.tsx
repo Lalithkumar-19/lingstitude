@@ -4,6 +4,8 @@ import { BookOpen, Video, FileText, Clock, Users, Calendar } from "lucide-react"
 import axiosInstance from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import BatchContent from "./BatchContent";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const BatchDashboard = () => {
 
@@ -11,10 +13,14 @@ const BatchDashboard = () => {
   const [selectedVideo, setSelectedVideo] = useState(null); // State to track the selected video
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
+  const enrolled_batch=useSelector((state:RootState)=>state.user.enrolled_batch);
+
   useEffect(() => {
     const fetchBatchDetails = async () => {
       try {
-        const res = await axiosInstance.get("api/batch/get-batch?batch_name=Batch 1");
+        
+        const res = await axiosInstance.get(`/api/batch/get-batch?batch_name=${enrolled_batch}`);
+        console.log(res.data.data,"datch data");
         if (res.status === 200) {
           setBatchData(res.data.data);
         }
@@ -23,9 +29,7 @@ const BatchDashboard = () => {
       }
     };
     fetchBatchDetails();
-  }, []);
-
-  // Function to handle play button click
+  }, []);  // Function to handle play button click
   const handlePlayClick = (videoUrl) => {
     setSelectedVideo(videoUrl);
     setIsModalOpen(true);
@@ -40,7 +44,7 @@ const BatchDashboard = () => {
   return (
     <div className="container mx-auto px-4 py-8 mt-10">
       <h1 className="text-3xl font-bold text-blue-800 mb-6 text-center">
-        {batchData?.batch_name || "Batch 1"}
+        Student Dashboard
       </h1>
 
 

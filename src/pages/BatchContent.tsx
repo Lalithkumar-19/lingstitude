@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Video, Calendar, Download, Clock, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axiosInstance";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import formatDate from "@/lib/dateformat";
 
 type BatchDetails = {
   id: string;
@@ -60,24 +63,30 @@ const BatchContent = () => {
 
   
   const [batchData, setBatchData] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null); // State to track the selected video
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  
+  console.log(batchData);
+ const enrolled_batch = useSelector((state: RootState) => state.user.enrolled_batch);
+console.log("enrolled", enrolled_batch);
 
-  useEffect(() => {
-    const fetchBatchDetails = async () => {
-      try {
-        const res = await axiosInstance.get("api/batch/get-batch?batch_name=Batch 1");
-        console.log(res.data.data,"datacfcjknj");
-        if (res.status === 200) {
-          setBatchData(res.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching batch details", error);
+useEffect(() => {
+  const fetchBatchDetails = async () => {
+    try {
+      if (!enrolled_batch) return; 
+      const res = await axiosInstance.get(`/api/batch/get-batch?batch_name=${enrolled_batch}`);
+      console.log(res.data.data, "batch data");
+
+      if (res.status === 200) {
+        setBatchData(res.data.data);
       }
-    };
-    fetchBatchDetails();
-  }, []);
-  console.log(batchData,"batch");
+    } catch (error) {
+      console.error("Error fetching batch details", error);
+    }
+  };
+
+  fetchBatchDetails();
+}, [enrolled_batch]);
+
+console.log(batchData, "batch");
 
 
 
@@ -255,7 +264,7 @@ const BatchContent = () => {
     );
   }
 
-  if (!batchDetails) {
+  if (!batchDetails||!batchData) {
     return (
       <div className="min-h-screen flex flex-col">
         
@@ -276,14 +285,14 @@ const BatchContent = () => {
       <main className="flex-1 container mx-auto py-12 px-4">
         <div className="w-full mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{batchDetails.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">{batchData.batch_name}</h1>
             <p className="text-lg text-muted-foreground mb-4">
-              {batchDetails.description}
+              {batchData.batch_description}
             </p>
             <div className="flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>{batchDetails.startDate} to {batchDetails.endDate}</span>
+                Created on<span>{formatDate(batchData.createdAt)} </span>
               </div>
             </div>
           </div>

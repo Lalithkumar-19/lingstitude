@@ -39,13 +39,12 @@ const Coursestabs:React.FC = () => {
   const [newClassTime, setNewClassTime] = useState("");
   const [newClassLink, setNewClassLink] = useState("");
   const [newClassDescription, setNewClassDescription] = useState("");
+  const [moduleName,setModuleName]=useState("");
   const [title,setTitle]=useState<string>("");
 
 
 
   const scheduleData:any[]=useSelector((state:RootState)=>state.schedule.schedules);
-
-console.log("sc d",scheduleData);
 
 
 
@@ -67,47 +66,64 @@ console.log("sc d",scheduleData);
 
 
 
-
-  const handleUpload = async(e: React.FormEvent) => {
+const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBatch||title.trim()=="") {
-      toast({
-        title: "Error",
-        description: "Please select a batch or give title",
-        variant: "destructive",
-      });
-      return;
+    if (!selectedBatch || !title.trim()||!moduleName.trim()) {
+        toast({
+            title: "Error",
+            description: "Please select a batch or give a title",
+            variant: "destructive",
+        });
+        return;
     }
-    
-    if (!selectedFiles) {
-      toast({
-        title: "Error",
-        description: "Please select files to upload",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    toast({
-      title: "Upload started",
-      description: `Uploading file(s) to ${selectedBatch}`,
-    });
-     const formdata=new FormData();
-     formdata.set("file",selectedFiles[0]);
-     formdata.set("batch_name",selectedBatch);
-     formdata.set("title",title);
-    const res=await axiosInstance.post("/api/admin/upload-pdf",formdata);
 
-    if(res.status==200){
-       toast({
-        title: "Upload complete",
-        description: `file(s) uploaded successfully`,
-      });
-       setSelectedFiles(null);
+    if (!selectedFiles) {
+        toast({
+            title: "Error",
+            description: "Please select files to upload",
+            variant: "destructive",
+        });
+        return;
     }
-      const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-  };
+
+    toast({
+        title: "Upload started",
+        description: `Uploading file(s) to ${selectedBatch}`,
+    });
+
+    try {
+        const formData = new FormData();
+        formData.append("file", selectedFiles);
+        formData.append("batchId", selectedBatch);
+        formData.append("title", title);
+        formData.append("moduleName",moduleName);
+
+        const res = await axiosInstance.post("/api/admin/upload-pdf", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        if (res.status === 200) {
+            toast({
+                title: "Upload complete",
+                description: `File(s) uploaded successfully`,
+            });
+            setSelectedFiles(null);
+
+            // Reset file input
+            const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
+            if (fileInput) fileInput.value = '';
+        }
+    } catch (error) {
+        toast({
+            title: "Upload failed",
+            description: "There was an error uploading the file.",
+            variant: "destructive",
+        });
+        console.error("Upload error:", error);
+    }
+};
 
 
 
@@ -172,7 +188,7 @@ console.log("sc d",scheduleData);
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleUpload} className="space-y-6">
-                    <div className="space-y-2">
+                    <div className="space-y-5">
                       <Label htmlFor="batch">Select Batch</Label>
                       <select
                         id="batch"
@@ -190,7 +206,11 @@ console.log("sc d",scheduleData);
                       </select>
 
                       <Input placeholder='please enter the file name' className='mt-6' value={title} onChange={(e)=>setTitle(e.target.value)}></Input>
+
+                        <Input placeholder='please enter the Module name(if it exist the file will be added to it or cretes new module' className='mt-6' value={moduleName} onChange={(e)=>setModuleName(e.target.value)}></Input>
                     </div>
+                   
+                   
                     
                     <div className="space-y-2">
                       <Label htmlFor="fileUpload">Upload Files</Label>

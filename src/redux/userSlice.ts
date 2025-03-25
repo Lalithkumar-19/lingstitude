@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState={
     user:{},
     isAdmin:false,
+    enrolled_batch:"",
 }
 
 const userSlice=createSlice({
@@ -11,6 +12,7 @@ const userSlice=createSlice({
     reducers:{
         addUser:(state,action)=>{
             state.user=action.payload;
+            state.enrolled_batch=action.payload.enrolled_batch;
         },
         adminToggle:(state,action)=>{
             state.isAdmin=action.payload;
