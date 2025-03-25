@@ -7,6 +7,15 @@ import BatchContent from "./BatchContent";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
+interface Article {
+  title: string;
+  description: string | null;
+  url: string;
+  image: string | null;
+  source: string;
+  publishedAt: string;
+}
+
 const BatchDashboard = () => {
 
   const [batchData, setBatchData] = useState(null);
@@ -40,6 +49,27 @@ const BatchDashboard = () => {
     setSelectedVideo(null);
     setIsModalOpen(false);
   };
+
+
+  
+  
+  
+    const [articles, setArticles] = useState<Article[]>([]);
+  
+    const fetchNews = async () => {
+      try {
+        const { data } = await axiosInstance.get("/api/news", {
+          params: { country: "us", category: "general" },
+        });
+        setArticles(data.articles);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchNews();
+    }, []);
 
   return (
     <div className="container mx-auto px-4 py-8 mt-10">
@@ -142,6 +172,35 @@ const BatchDashboard = () => {
           )}
         </CardContent>
       </Card>
+
+
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 mt-5">
+      
+      {articles.map((article, index) => (
+        <Card key={index} className="bg-white shadow-md rounded-2xl">
+          {article.image && (
+            <img
+              src={article.image}
+              alt={article.title}
+              className="w-full h-40 object-cover rounded-t-2xl"
+            />
+          )}
+          <CardHeader>
+            <CardTitle>{article.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600">{article.description || "No description available."}</p>
+            <p className="text-xs text-gray-400 mt-2">Source: {article.source}</p>
+            <p className="text-xs text-gray-400">Published: {new Date(article.publishedAt).toLocaleString()}</p>
+            <a href={article.url} target="_blank" rel="noopener noreferrer">
+              <Button variant="link" className="text-blue-600 mt-3">
+                Read more
+              </Button>
+            </a>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
     </div>
   );
 };
