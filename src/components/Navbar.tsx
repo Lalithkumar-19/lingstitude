@@ -29,6 +29,7 @@ const Navbar = () => {
   const handleLogout=()=>{
     localStorage.removeItem("Usertoken");
     localStorage.removeItem("User");
+    localStorage.removeItem("Admintoken");
     window.location.href="/";
   }
 
@@ -84,13 +85,16 @@ const Navbar = () => {
               Sign Up
             </a> */}
             {isAdmin && (
+              <>
               <Link
                 to="/admin"
-                className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white
-                 "
+                className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white"
               >
                 Admin panel
               </Link>
+            <LogOutIcon className="cursor-pointer" onClick={handleLogout}/>
+            </>
+
             )}
             {!isAdmin &&
               (user?.fullName ? (
