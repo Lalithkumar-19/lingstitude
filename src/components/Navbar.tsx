@@ -76,7 +76,7 @@ const Navbar = () => {
               About Us
             </a>
             <a
-              href="#testimonials"
+              href="/#testimonials"
               className="text-foreground/80 hover:text-foreground transition-colors"
             >
               Testimonials

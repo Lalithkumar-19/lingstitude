@@ -49,7 +49,7 @@ const Hero = () => {
                   className="h-8 w-8 rounded-full border-2 border-white object-cover"
                 />
               </div>
-              <span>Join over <span className="font-medium text-foreground">2,000+ students</span> worldwide</span>
+              <span>Join over <span className="font-medium text-foreground">50+ students</span> worldwide</span>
             </div>
           </div>
           
