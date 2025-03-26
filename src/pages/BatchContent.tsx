@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,7 +58,7 @@ const BatchContent = () => {
   const batchId = searchParams.get("id") || "batch-2023-A"; // Default to first batch if none specified
   const [batchDetails, setBatchDetails] = useState<BatchDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+   const navigate=useNavigate();
 
 
   
@@ -304,16 +304,16 @@ console.log(batchData, "batch");
             </TabsList>
             
             <TabsContent value="materials" className="mt-6">
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <BookOpen className="h-5 w-5" />
-        Learning Materials
-      </CardTitle>
-      <CardDescription>
-        Access all course modules and learning resources.
-      </CardDescription>
-    </CardHeader>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Learning Materials
+              </CardTitle>
+              <CardDescription>
+                Access all course modules and learning resources.
+              </CardDescription>
+            </CardHeader>
 
     <CardContent>
       <Accordion type="single" collapsible className="w-full">
@@ -343,7 +343,7 @@ console.log(batchData, "batch");
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(material.fileUrl, "_blank")}
+                      onClick={() => navigate(`/viewpdf?link=${material.fileUrl}`)}
                     >
                       <ViewIcon className="h-4 w-4 mr-1" />
                       View

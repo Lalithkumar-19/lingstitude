@@ -18,9 +18,7 @@ const Footer = () => {
     {
       title: "Company",
       links: [
-        { name: "About Us", href: "#" },
-        { name: "Our Team", href: "#" },
-        { name: "Careers", href: "#" },
+        { name: "About Us", href: "/about" },
         { name: "Press", href: "#" },
       ],
     },
@@ -84,12 +82,18 @@ const Footer = () => {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
+                    {link.name=="About Us"?
+                    (
+                      <a href={"/about"} className="text-muted-foreground hover:text-foreground transition-colors">
+                        {link.name}
+                      </a>
+                    ):
+                    <span
                       className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {link.name}
-                    </a>
+                  </span>
+                  }
                   </li>
                 ))}
               </ul>
@@ -101,7 +105,7 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">
             &copy; {currentYear} Lingstitude. All rights reserved.
           </p>
-          <div className="mt-4 md:mt-0">
+          {/* <div className="mt-4 md:mt-0">
             <select
               className="bg-muted text-sm rounded-md px-3 py-1.5 border border-border focus:outline-none focus:ring-2 focus:ring-brand-600"
               defaultValue="en-US"
@@ -111,8 +115,8 @@ const Footer = () => {
               <option value="fr-FR">Français</option>
               <option value="de-DE">Deutsch</option>
               <option value="zh-CN">中文 (简体)</option>
-            </select>
-          </div>
+            </select> */}
+          {/* </div> */}
         </div>
       </div>
     </footer>

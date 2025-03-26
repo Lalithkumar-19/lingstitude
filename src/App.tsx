@@ -22,7 +22,12 @@ import { AppDispatch, RootState } from "./redux/store";
 import { addUser, adminToggle } from "./redux/userSlice";
 import About from "./pages/About";
 import Courses from "./pages/Courses";
+<<<<<<< HEAD
 import Profile from "./pages/Profile";
+=======
+import Pdfview from "./pages/Pdfview";
+import VideoChat from "./pages/VideoChat";
+>>>>>>> 7ed2987afc54e298cf4f8a88855190aefef6db80
 
 const queryClient = new QueryClient();
 
@@ -31,6 +36,7 @@ const queryClient = new QueryClient();
 const App = () => {
   const dispatch=useDispatch<AppDispatch>();
   const admin=useSelector((state:RootState)=>state.user.isAdmin);
+  const isStudent=useSelector((state:RootState)=>state.user.enrolled_batch);
 
   useEffect(() => {
     const user=localStorage.getItem("User");
@@ -65,10 +71,17 @@ const App = () => {
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/live-classes" element={<LiveClasses />} />
-                <Route path="/batches" element={<BatchDashboard />} />
                 <Route path="/practice-partner" element={<PracticePartner />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
+              <Route path="/viewpdf" element={<Pdfview />} />
+              {isStudent&&
+              
+               <Route path="/batches" element={<BatchDashboard />} />
+              
+                 }
+                 <Route path="/one-to-connect" element={<VideoChat/>}/>
+
                 
 
                 {/* Admin Route */}
