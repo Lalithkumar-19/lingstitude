@@ -22,12 +22,9 @@ import { AppDispatch, RootState } from "./redux/store";
 import { addUser, adminToggle } from "./redux/userSlice";
 import About from "./pages/About";
 import Courses from "./pages/Courses";
-<<<<<<< HEAD
 import Profile from "./pages/Profile";
-=======
 import Pdfview from "./pages/Pdfview";
 import VideoChat from "./pages/VideoChat";
->>>>>>> 7ed2987afc54e298cf4f8a88855190aefef6db80
 
 const queryClient = new QueryClient();
 

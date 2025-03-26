@@ -91,7 +91,6 @@ const BatchDashboard = () => {
 
 
     const [thought, setThought] = useState<Thought | null>(null);
-const [loading, setLoading] = useState(true);
 
 const fetchThought = async () => {
   try {
