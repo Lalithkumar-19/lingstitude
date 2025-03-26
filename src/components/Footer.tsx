@@ -1,9 +1,8 @@
-
 import { cn } from "@/lib/utils";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   const footerSections = [
     {
       title: "Programs",
@@ -54,7 +53,8 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Specialized English training for career advancement, helping professionals excel in the global workplace.
+              Specialized English training for career advancement, helping
+              professionals excel in the global workplace.
             </p>
             <div className="flex space-x-4">
               {[
@@ -82,18 +82,18 @@ const Footer = () => {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    {link.name=="About Us"?
-                    (
-                      <a href={"/about"} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {link.name == "About Us" ? (
+                      <a
+                        href={"/about"}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
                         {link.name}
                       </a>
-                    ):
-                    <span
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.name}
-                  </span>
-                  }
+                    ) : (
+                      <span className="text-muted-foreground hover:text-foreground transition-colors">
+                        {link.name}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -105,18 +105,7 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">
             &copy; {currentYear} Lingstitude. All rights reserved.
           </p>
-          {/* <div className="mt-4 md:mt-0">
-            <select
-              className="bg-muted text-sm rounded-md px-3 py-1.5 border border-border focus:outline-none focus:ring-2 focus:ring-brand-600"
-              defaultValue="en-US"
-            >
-              <option value="en-US">English (US)</option>
-              <option value="es-ES">Español</option>
-              <option value="fr-FR">Français</option>
-              <option value="de-DE">Deutsch</option>
-              <option value="zh-CN">中文 (简体)</option>
-            </select> */}
-          {/* </div> */}
+         
         </div>
       </div>
     </footer>

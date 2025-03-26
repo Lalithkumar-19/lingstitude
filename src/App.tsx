@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import LiveClasses from "./pages/LiveClasses";
 import AdminDashboard from "./pages/AdminDashboard";
 import BatchContent from "./pages/BatchContent";
 import PracticePartner from "./pages/PracticePartner";
@@ -28,26 +27,23 @@ import VideoChat from "./pages/VideoChat";
 
 const queryClient = new QueryClient();
 
-
-
 const App = () => {
-  const dispatch=useDispatch<AppDispatch>();
-  const admin=useSelector((state:RootState)=>state.user.isAdmin);
-  const isStudent=useSelector((state:RootState)=>state.user.enrolled_batch);
+  const dispatch = useDispatch<AppDispatch>();
+  const admin = useSelector((state: RootState) => state.user.isAdmin);
+  const isStudent = useSelector(
+    (state: RootState) => state.user.enrolled_batch
+  );
 
   useEffect(() => {
-    const user=localStorage.getItem("User");
-    const admin=localStorage.getItem("Admintoken");
-    if(user){
+    const user = localStorage.getItem("User");
+    const admin = localStorage.getItem("Admintoken");
+    if (user) {
       dispatch(addUser(JSON.parse(user)));
     }
-    if(admin){
+    if (admin) {
       dispatch(adminToggle(true));
     }
   }, []);
-  
-
-  
 
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -57,9 +53,8 @@ const App = () => {
             {/* UI Notifications */}
             <Toaster />
             <Sonner position="top-right" />
-            
+
             <BrowserRouter>
-              
               <Navbar />
               <Routes>
                 {/* Public Routes */}
@@ -67,24 +62,17 @@ const App = () => {
                 <Route path="/about" element={<About />} />
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/live-classes" element={<LiveClasses />} />
                 <Route path="/practice-partner" element={<PracticePartner />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
-              <Route path="/viewpdf" element={<Pdfview />} />
-              {isStudent&&
-              
-               <Route path="/batches" element={<BatchDashboard />} />
-              
-                 }
-                 <Route path="/one-to-connect" element={<VideoChat/>}/>
-
-                
+                <Route path="/viewpdf" element={<Pdfview />} />
+                {isStudent && (
+                  <Route path="/batches" element={<BatchDashboard />} />
+                )}
+                <Route path="/one-to-connect" element={<VideoChat />} />
 
                 {/* Admin Route */}
-                {admin&&
-                <Route path="/admin" element={<AdminDashboard />} />
-                }
+                {admin && <Route path="/admin" element={<AdminDashboard />} />}
                 {/* Catch-all Route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

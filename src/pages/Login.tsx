@@ -68,19 +68,21 @@ const LoginPage: React.FC = () => {
   };
 
   // ✅ Google OAuth Login Handling
-  
+
   const handleSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
-  
+
     try {
-      const { data } = await axiosInstance.post("/api/auth/google-login", { token });
-      
+      const { data } = await axiosInstance.post("/api/auth/google-login", {
+        token,
+      });
+
       // Save user and token properly
-       // Save user info
+      // Save user info
       console.log(data);
       localStorage.setItem("Usertoken", data.token); // Save JWT token
       dispatch(addUser(data.user));
-        localStorage.setItem("User", JSON.stringify(data.user));
+      localStorage.setItem("User", JSON.stringify(data.user));
       toast({ title: "Login Success", description: "success" });
       navigate("/");
     } catch (error) {
@@ -88,12 +90,10 @@ const LoginPage: React.FC = () => {
       alert("❌ Login failed!");
     }
   };
-  
+
   const handleFailure = () => {
     alert("❌ Login failed! Please try again.");
   };
-  
-
 
   return (
     <div>
@@ -252,8 +252,6 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      
     </div>
   );
 };

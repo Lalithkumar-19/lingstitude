@@ -1,12 +1,27 @@
-
 import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, Phone, MessageCircle, MessagesSquare, UserPlus, Loader2, Send } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  Phone,
+  MessageCircle,
+  MessagesSquare,
+  UserPlus,
+  Loader2,
+  Send,
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type Message = {
@@ -33,8 +48,8 @@ const topics: ConversationTopic[] = [
       "What are your strengths and weaknesses?",
       "Where do you see yourself in five years?",
       "Why are you interested in this position?",
-      "Describe a challenge you faced at work and how you overcame it."
-    ]
+      "Describe a challenge you faced at work and how you overcame it.",
+    ],
   },
   {
     id: "t2",
@@ -45,8 +60,8 @@ const topics: ConversationTopic[] = [
       "What do you think about the new project proposal?",
       "How can we improve our team's productivity?",
       "Do you have any suggestions for the upcoming client presentation?",
-      "Let's brainstorm solutions to the current challenge."
-    ]
+      "Let's brainstorm solutions to the current challenge.",
+    ],
   },
   {
     id: "t3",
@@ -57,9 +72,9 @@ const topics: ConversationTopic[] = [
       "Tell me about your work/studies.",
       "Have you attended any interesting events lately?",
       "What do you think about [current industry trend]?",
-      "Would you like to connect and discuss potential collaboration?"
-    ]
-  }
+      "Would you like to connect and discuss potential collaboration?",
+    ],
+  },
 ];
 
 const PracticePartner = () => {
@@ -69,8 +84,12 @@ const PracticePartner = () => {
   const [isMicActive, setIsMicActive] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState<ConversationTopic | null>(null);
-  const [activeTopic, setActiveTopic] = useState<ConversationTopic | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<ConversationTopic | null>(
+    null
+  );
+  const [activeTopic, setActiveTopic] = useState<ConversationTopic | null>(
+    null
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,23 +108,26 @@ const PracticePartner = () => {
       toast({
         title: "Please select a topic",
         description: "Choose a conversation topic before connecting",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     setIsConnecting(true);
     setIsMatching(true);
-    
+
     // Simulate finding a partner
     setTimeout(() => {
       setIsMatching(false);
       setIsConnected(true);
       setActiveTopic(selectedTopic);
-      
+
       // Add welcome message from partner
-      addMessage("partner", `Hello! I'm your practice partner. Let's practice English conversation with the "${selectedTopic.title}" topic. I'll start with a question: ${selectedTopic.prompts[0]}`);
-      
+      addMessage(
+        "partner",
+        `Hello! I'm your practice partner. Let's practice English conversation with the "${selectedTopic.title}" topic. I'll start with a question: ${selectedTopic.prompts[0]}`
+      );
+
       toast({
         title: "Connected",
         description: "You are now connected with a practice partner",
@@ -119,7 +141,7 @@ const PracticePartner = () => {
     setIsMicActive(false);
     setMessages([]);
     setActiveTopic(null);
-    
+
     toast({
       title: "Disconnected",
       description: "You have disconnected from your practice partner",
@@ -129,7 +151,7 @@ const PracticePartner = () => {
   const toggleMic = () => {
     // In a real app, this would handle microphone permissions and streaming
     setIsMicActive(!isMicActive);
-    
+
     if (!isMicActive) {
       toast({
         title: "Microphone activated",
@@ -148,31 +170,35 @@ const PracticePartner = () => {
       id: Date.now().toString(),
       sender,
       text,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
   const sendMessage = (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     if (!messageInput.trim() || !isConnected) return;
-    
+
     // Add user message
     addMessage("user", messageInput);
     setMessageInput("");
-    
+
     // Simulate partner response after a delay
     setTimeout(() => {
       if (activeTopic) {
-        const randomPrompt = activeTopic.prompts[Math.floor(Math.random() * activeTopic.prompts.length)];
+        const randomPrompt =
+          activeTopic.prompts[
+            Math.floor(Math.random() * activeTopic.prompts.length)
+          ];
         const responses = [
           "That's interesting! " + randomPrompt,
           "I see. Let me ask you this: " + randomPrompt,
           "Great point! Now, " + randomPrompt,
-          "Thanks for sharing that. " + randomPrompt
+          "Thanks for sharing that. " + randomPrompt,
         ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const randomResponse =
+          responses[Math.floor(Math.random() * responses.length)];
         addMessage("partner", randomResponse);
       }
     }, 1500 + Math.random() * 1000);
@@ -184,9 +210,12 @@ const PracticePartner = () => {
       <main className="flex-1 container mx-auto py-12 px-4 mt-10">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Practice Partner</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              Practice Partner
+            </h1>
             <p className="text-lg text-muted-foreground">
-              Connect with another person to practice your English speaking and listening skills
+              Connect with another person to practice your English speaking and
+              listening skills
             </p>
           </div>
 
@@ -222,7 +251,7 @@ const PracticePartner = () => {
                 </CardContent>
                 <CardFooter>
                   {!isConnected ? (
-                    <Button 
+                    <Button
                       className="w-full"
                       onClick={handleConnect}
                       disabled={isConnecting || !selectedTopic}
@@ -240,8 +269,8 @@ const PracticePartner = () => {
                       )}
                     </Button>
                   ) : (
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       variant="destructive"
                       onClick={handleDisconnect}
                     >
@@ -296,7 +325,9 @@ const PracticePartner = () => {
                             <div
                               key={message.id}
                               className={`flex ${
-                                message.sender === "user" ? "justify-end" : "justify-start"
+                                message.sender === "user"
+                                  ? "justify-end"
+                                  : "justify-start"
                               }`}
                             >
                               <div
@@ -310,7 +341,7 @@ const PracticePartner = () => {
                                 <p className="text-xs opacity-70 mt-1">
                                   {message.timestamp.toLocaleTimeString([], {
                                     hour: "2-digit",
-                                    minute: "2-digit"
+                                    minute: "2-digit",
                                   })}
                                 </p>
                               </div>
@@ -319,7 +350,7 @@ const PracticePartner = () => {
                           <div ref={messagesEndRef} />
                         </div>
                       </ScrollArea>
-                      
+
                       <form onSubmit={sendMessage} className="flex gap-2">
                         <Input
                           placeholder="Type your message..."
@@ -335,10 +366,13 @@ const PracticePartner = () => {
                     <div className="h-full flex items-center justify-center text-center p-8">
                       <div>
                         <MessagesSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-medium mb-2">Not Connected</h3>
+                        <h3 className="text-lg font-medium mb-2">
+                          Not Connected
+                        </h3>
                         <p className="text-muted-foreground">
-                          Select a conversation topic and connect with a practice partner to start
-                          practicing your English skills.
+                          Select a conversation topic and connect with a
+                          practice partner to start practicing your English
+                          skills.
                         </p>
                       </div>
                     </div>

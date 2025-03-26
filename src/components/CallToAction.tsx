@@ -25,14 +25,24 @@ const CallToAction = () => {
     try {
       const res = await axiosInstance.post("/api/user/registration", formData);
       if (res.status === 200) {
-        toast({ title: "Registration Successful", description: "You have successfully reserved your seat!" });
+        toast({
+          title: "Registration Successful",
+          description: "You have successfully reserved your seat!",
+        });
         setFormData({ fullName: "", email: "", phoneNumber: "" }); // Reset form on success
       } else {
-        toast({ title: "Registration Failed", description: res.data.msg || "Something went wrong. Please try again." });
+        toast({
+          title: "Registration Failed",
+          description:
+            res.data.msg || "Something went wrong. Please try again.",
+        });
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      toast({ title: "Error", description: "Failed to register. Please try again later." });
+      toast({
+        title: "Error",
+        description: "Failed to register. Please try again later.",
+      });
     }
   };
 
@@ -40,7 +50,10 @@ const CallToAction = () => {
     <section className="py-20">
       <div className="container">
         <div className="rounded-3xl bg-brand-600 overflow-hidden relative">
-          <div className="absolute top-0 left-0 right-0 h-full bg-gradient-to-r from-brand-700 to-brand-500 clip-polygon" aria-hidden="true"></div>
+          <div
+            className="absolute top-0 left-0 right-0 h-full bg-gradient-to-r from-brand-700 to-brand-500 clip-polygon"
+            aria-hidden="true"
+          ></div>
           <div className="absolute w-full h-full top-0 left-0 opacity-10">
             <div className="absolute top-0 left-[10%] w-72 h-72 bg-white rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 right-[10%] w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -53,27 +66,51 @@ const CallToAction = () => {
                   Ready to Advance Your Career with English?
                 </h2>
                 <p className="text-lg text-white/80 mb-8 max-w-lg">
-                  Join thousands of professionals who have accelerated their careers with our specialized English communication programs.
+                  Join thousands of professionals who have accelerated their
+                  careers with our specialized English communication programs.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                <a href="https://wa.me/+9492022599" target="_blank" rel="noopener noreferrer"><Button size="lg" className="bg-white text-brand-700 hover:bg-white/90 font-medium">
-                    Start Your Journey <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button></a>
-                  <a href="https://wa.me/+9492022599" target="_blank" rel="noopener noreferrer"><Button size="lg" className="bg-brand-500 border-white text-white hover:bg-white/10 font-medium">
-                    Book a Webinar
-                  </Button></a>
+                  <a
+                    href="https://wa.me/+9492022599"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      size="lg"
+                      className="bg-white text-brand-700 hover:bg-white/90 font-medium"
+                    >
+                      Start Your Journey <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                  <a
+                    href="https://wa.me/+9492022599"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      size="lg"
+                      className="bg-brand-500 border-white text-white hover:bg-white/10 font-medium"
+                    >
+                      Book a Webinar
+                    </Button>
+                  </a>
                 </div>
               </div>
 
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg animate-fade-up [animation-delay:200ms]">
-                <h3 className="text-xl font-semibold mb-4">Want to Book Your Seat</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  Want to Book Your Seat
+                </h3>
                 <p className="text-white/80 mb-6">
-                  "English Communication Strategies for Job Interviews" &mdash; Live session with career experts
+                  "English Communication Strategies for Job Interviews" &mdash;
+                  Live session with career experts
                 </p>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
-                    <label className="sr-only" htmlFor="fullName">Full Name</label>
+                    <label className="sr-only" htmlFor="fullName">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       id="fullName"
@@ -86,7 +123,9 @@ const CallToAction = () => {
                   </div>
 
                   <div>
-                    <label className="sr-only" htmlFor="email">Email Address</label>
+                    <label className="sr-only" htmlFor="email">
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       id="email"
@@ -99,7 +138,9 @@ const CallToAction = () => {
                   </div>
 
                   <div>
-                    <label className="sr-only" htmlFor="phoneNumber">Phone Number</label>
+                    <label className="sr-only" htmlFor="phoneNumber">
+                      Phone Number
+                    </label>
                     <input
                       type="number"
                       id="phoneNumber"
@@ -111,11 +152,15 @@ const CallToAction = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-white text-brand-700 hover:bg-white/90">
+                  <Button
+                    type="submit"
+                    className="w-full bg-white text-brand-700 hover:bg-white/90"
+                  >
                     Reserve Your Seat
                   </Button>
                   <p className="text-xs text-white/60 text-center">
-                    Limited spots available. We'll send you the details via email.
+                    Limited spots available. We'll send you the details via
+                    email.
                   </p>
                 </form>
               </div>

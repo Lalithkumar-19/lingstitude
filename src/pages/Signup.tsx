@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import axiosInstance  from '@/lib/axiosInstance';
-import { toast } from '@/hooks/use-toast';
-import {useNavigate} from 'react-router-dom';
+import React, { useState } from "react";
+import Navbar from "../components/Navbar";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import axiosInstance from "@/lib/axiosInstance";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
   // Form state with TypeScript type
@@ -12,23 +12,23 @@ const SignupPage: React.FC = () => {
     email: string;
     password: string;
     agreeToTerms: boolean;
-    accountType: 'user' | 'admin';
+    accountType: "user" | "admin";
   }>({
-    fullName: '',
-    email: '',
-    password: '',
+    fullName: "",
+    email: "",
+    password: "",
     agreeToTerms: false,
-    accountType: 'user',
+    accountType: "user",
   });
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   // Handle input change for all types of input (including checkbox and radio buttons)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -37,23 +37,20 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
 
     if (!formData.agreeToTerms) {
-      alert('You must agree to the terms and conditions.');
+      alert("You must agree to the terms and conditions.");
       return;
     }
-    if(formData.password.length<6){
-      toast({title:"password must be atleast 6 characters"});
+    if (formData.password.length < 6) {
+      toast({ title: "password must be atleast 6 characters" });
       return;
     }
-    const res=await  axiosInstance.post("/api/auth/signup",formData);
-   if(res.status==201){
-    toast({title:"Registered Success",description:"success"});
-    navigate("/login");
-   }
-    else{
-      toast({title:"signup Failed",description: res.data.msg});
+    const res = await axiosInstance.post("/api/auth/signup", formData);
+    if (res.status == 201) {
+      toast({ title: "Registered Success", description: "success" });
+      navigate("/login");
+    } else {
+      toast({ title: "signup Failed", description: res.data.msg });
     }
-
-    
   };
 
   // ✅ Handle Google OAuth Signup
@@ -62,27 +59,26 @@ const SignupPage: React.FC = () => {
       try {
         console.log("Google Token Response:", tokenResponse);
         const { access_token } = tokenResponse;
-  
+
         if (!access_token) {
           console.error("No Access Token received!");
           return;
         }
-  
+
         // ✅ Fetch ID token from Google's tokeninfo endpoint
         const tokenInfo = await axiosInstance.get(
           `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
         );
-  
+
         const idToken = tokenInfo.data.id_token;
         if (!idToken) {
           console.error("No ID Token received!");
           return;
         }
-  
+
         console.log("ID Token:", idToken);
-  
+
         // ✅ Send ID token to backend using Zustand's googleLogin function
-        
       } catch (error) {
         console.error("Google Login Error:", error);
       }
@@ -145,14 +141,17 @@ const SignupPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Full Name */}
             <div>
-              <label htmlFor="name" className="block text-gray-700 font-medium mb-1">
+              <label
+                htmlFor="name"
+                className="block text-gray-700 font-medium mb-1"
+              >
                 Full Name
               </label>
               <input
                 type="text"
                 id="name"
                 name="fullName"
-                value={formData.fullName} 
+                value={formData.fullName}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md"
                 required
@@ -161,7 +160,10 @@ const SignupPage: React.FC = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 font-medium mb-1"
+              >
                 Email Address
               </label>
               <input
@@ -177,7 +179,10 @@ const SignupPage: React.FC = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-medium mb-1"
+              >
                 Password
               </label>
               <input
@@ -193,9 +198,11 @@ const SignupPage: React.FC = () => {
 
             {/* Account Type */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Account Type</label>
+              <label className="block text-gray-700 font-medium mb-1">
+                Account Type
+              </label>
               <div className="flex gap-4">
-                {['user', 'admin'].map((type) => (
+                {["user", "admin"].map((type) => (
                   <label key={type} className="flex items-center">
                     <input
                       type="radio"
@@ -223,11 +230,11 @@ const SignupPage: React.FC = () => {
                   required
                 />
                 <span className="ml-2">
-                  I agree to the{' '}
+                  I agree to the{" "}
                   <a href="#" className="text-blue-600">
                     Terms of Service
-                  </a>{' '}
-                  and{' '}
+                  </a>{" "}
+                  and{" "}
                   <a href="#" className="text-blue-600">
                     Privacy Policy
                   </a>
@@ -238,7 +245,7 @@ const SignupPage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-blue-600 text-white p-2 rounded-md`} 
+              className={`w-full bg-blue-600 text-white p-2 rounded-md`}
             >
               Sign Up
             </button>
@@ -246,14 +253,13 @@ const SignupPage: React.FC = () => {
 
           {/* Login Redirect */}
           <div className="text-center mt-4 text-gray-600 text-sm">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a href="/login" className="text-blue-600">
               Login
             </a>
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

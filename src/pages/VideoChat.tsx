@@ -1,21 +1,20 @@
-import { useEffect, useState, useRef } from 'react';
-import { io } from 'socket.io-client';
-import Peer from 'peerjs';
-import { Button } from '@/components/ui/button';
-import { PhoneOff } from 'lucide-react';
+import { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
+import Peer from "peerjs";
+import { Button } from "@/components/ui/button";
+import { PhoneOff } from "lucide-react";
 
 const VideoChat = () => {
-
-  const [peerId, setPeerId] = useState('');
-  const [remotePeerId, setRemotePeerId] = useState('');
-  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [peerId, setPeerId] = useState("");
+  const [remotePeerId, setRemotePeerId] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [isMatching, setIsMatching] = useState(false);
-  
+
   const peerInstance = useRef<Peer | null>(null);
   const socketRef = useRef<any>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const currentCall = useRef<Peer.MediaConnection | null>(null);
-  
+
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -26,61 +25,61 @@ const VideoChat = () => {
       debug: 3,
       config: {
         iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:global.stun.twilio.com:3478' }
-        ]
-      }
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:global.stun.twilio.com:3478" },
+        ],
+      },
     });
 
-    peer.on('open', (id) => {
-      console.log('My peer ID:', id);
+    peer.on("open", (id) => {
+      console.log("My peer ID:", id);
       setPeerId(id);
     });
 
-    peer.on('call', async (call) => {
+    peer.on("call", async (call) => {
       try {
-        console.log('Receiving call from:', call.peer);
+        console.log("Receiving call from:", call.peer);
         const stream = await getMediaStream();
         call.answer(stream);
-        
-        call.on('stream', (remoteStream) => {
-          console.log('Received remote stream from answer');
+
+        call.on("stream", (remoteStream) => {
+          console.log("Received remote stream from answer");
           setRemoteVideo(remoteStream);
           setRemotePeerId(call.peer);
-          setConnectionStatus('connected');
+          setConnectionStatus("connected");
         });
 
-        call.on('close', () => {
-          console.log('Call closed by remote peer');
+        call.on("close", () => {
+          console.log("Call closed by remote peer");
           endCall();
         });
 
         currentCall.current = call;
       } catch (error) {
-        console.error('Error answering call:', error);
+        console.error("Error answering call:", error);
         endCall();
       }
     });
 
-    peer.on('error', (err) => {
-      console.error('PeerJS error:', err);
+    peer.on("error", (err) => {
+      console.error("PeerJS error:", err);
       endCall();
     });
 
     // Create Socket connection
-    const socket = io('http://localhost:5001', {
+    const socket = io("http://localhost:5001", {
       withCredentials: true,
-      transports: ['websocket']
+      transports: ["websocket"],
     });
 
-    socket.on('match-found', (data) => {
-      console.log('Matched with peer:', data.peerId);
+    socket.on("match-found", (data) => {
+      console.log("Matched with peer:", data.peerId);
       setRemotePeerId(data.peerId);
       initiateCall(data.peerId);
     });
 
-    socket.on('partner-disconnected', () => {
-      console.log('Partner disconnected');
+    socket.on("partner-disconnected", () => {
+      console.log("Partner disconnected");
       endCall();
     });
 
@@ -98,7 +97,7 @@ const VideoChat = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: true,
       });
       localStreamRef.current = stream;
       if (localVideoRef.current) {
@@ -106,7 +105,7 @@ const VideoChat = () => {
       }
       return stream;
     } catch (error) {
-      console.error('Error getting media:', error);
+      console.error("Error getting media:", error);
       throw error;
     }
   };
@@ -122,32 +121,31 @@ const VideoChat = () => {
 
     try {
       setIsMatching(false);
-      setConnectionStatus('connecting');
-      
+      setConnectionStatus("connecting");
+
       const stream = await getMediaStream();
-      console.log('Calling peer:', remotePeerId);
-      
+      console.log("Calling peer:", remotePeerId);
+
       const call = peerInstance.current.call(remotePeerId, stream);
       currentCall.current = call;
 
-      call.on('stream', (remoteStream) => {
-        console.log('Received remote stream from call');
+      call.on("stream", (remoteStream) => {
+        console.log("Received remote stream from call");
         setRemoteVideo(remoteStream);
-        setConnectionStatus('connected');
+        setConnectionStatus("connected");
       });
 
-      call.on('close', () => {
-        console.log('Call closed');
+      call.on("close", () => {
+        console.log("Call closed");
         endCall();
       });
 
-      call.on('error', (err) => {
-        console.error('Call error:', err);
+      call.on("error", (err) => {
+        console.error("Call error:", err);
         endCall();
       });
-
     } catch (error) {
-      console.error('Error initiating call:', error);
+      console.error("Error initiating call:", error);
       endCall();
     }
   };
@@ -157,55 +155,54 @@ const VideoChat = () => {
 
     try {
       setIsMatching(true);
-      setConnectionStatus('connecting');
-      
+      setConnectionStatus("connecting");
+
       await getMediaStream();
-      socketRef.current.emit('join-video-chat', peerId);
+      socketRef.current.emit("join-video-chat", peerId);
 
       // Timeout after 30 seconds if no match found
       setTimeout(() => {
-        if (connectionStatus === 'connecting') {
+        if (connectionStatus === "connecting") {
           endCall();
-          alert('No match found. Please try again.');
+          alert("No match found. Please try again.");
         }
       }, 30000);
-
     } catch (error) {
-      console.error('Error starting call:', error);
+      console.error("Error starting call:", error);
       endCall();
     }
   };
 
   const endCall = () => {
-    console.log('Ending call and cleaning up...');
-    
+    console.log("Ending call and cleaning up...");
+
     if (currentCall.current) {
       currentCall.current.close();
       currentCall.current = null;
     }
-    
+
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
-    
+
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = null;
     }
-    
+
     if (remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = null;
     }
-    
-    setRemotePeerId('');
+
+    setRemotePeerId("");
     setIsMatching(false);
-    setConnectionStatus('disconnected');
+    setConnectionStatus("disconnected");
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
       <h1 className="text-2xl font-bold mb-4">Random Practice </h1>
-      
+
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="flex flex-col items-center">
           <video
@@ -227,32 +224,38 @@ const VideoChat = () => {
           <span className="mt-2 text-sm">Partner Camera</span>
         </div>
       </div>
-      
+
       <div className="flex gap-4 mb-4">
         <Button
           onClick={startRandomCall}
-          disabled={isMatching || connectionStatus === 'connected'}
+          disabled={isMatching || connectionStatus === "connected"}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {isMatching ? 'Searching for partner...' : 'Start Random Chat'}
+          {isMatching ? "Searching for partner..." : "Start Random Chat"}
         </Button>
         <Button
           onClick={endCall}
-          disabled={connectionStatus !== 'connected'}
+          disabled={connectionStatus !== "connected"}
           variant="destructive"
           className="flex items-center gap-2"
         >
           <PhoneOff className="w-5 h-5" /> End Call
         </Button>
       </div>
-      
+
       <div className="space-y-2 text-center">
-        <div className="text-sm text-gray-600">Your ID: {peerId || 'Generating...'}</div>
+        <div className="text-sm text-gray-600">
+          Your ID: {peerId || "Generating..."}
+        </div>
         {remotePeerId && (
-          <div className="text-sm text-green-600">Connected to: {remotePeerId}</div>
+          <div className="text-sm text-green-600">
+            Connected to: {remotePeerId}
+          </div>
         )}
-        {connectionStatus === 'connecting' && (
-          <div className="text-sm text-blue-600">Establishing connection...</div>
+        {connectionStatus === "connecting" && (
+          <div className="text-sm text-blue-600">
+            Establishing connection...
+          </div>
         )}
       </div>
     </div>

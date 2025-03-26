@@ -1,12 +1,7 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { Plus, Calendar } from "lucide-react";
 import dateformat from "@/lib/dateformat";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +17,7 @@ export type ScheduleTypes = {
   date: string;
   time: string;
   link: string;
-  _id:string;
+  _id: string;
 };
 
 export const ScheduleCard: React.FC<ScheduleTypes> = ({
@@ -32,30 +27,25 @@ export const ScheduleCard: React.FC<ScheduleTypes> = ({
   date,
   time,
   link,
-  _id
-
+  _id,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const batches = useSelector((state: RootState) => state.schedule.schedules);
 
-
-  const dispatch=useDispatch<AppDispatch>();
-  const batches=useSelector((state:RootState)=>state.schedule.schedules);
-   
-  const handleDelete=async()=>{
+  const handleDelete = async () => {
     try {
-      const res=await axiosInstance.delete(`/api/admin/schedule?id=${_id}`);
-      if(res.status==200){
+      const res = await axiosInstance.delete(`/api/admin/schedule?id=${_id}`);
+      if (res.status == 200) {
         dispatch(removeSchedule(_id));
         toast({
-          title:"Deleted Successfully",
-          description:"Deleted from batch",
+          title: "Deleted Successfully",
+          description: "Deleted from batch",
         });
       }
-      
     } catch (error) {
-     console.log(error); 
+      console.log(error);
     }
-
-  }
+  };
 
   return (
     <Card className="mt-10 w-full">
@@ -97,7 +87,7 @@ export const ScheduleCard: React.FC<ScheduleTypes> = ({
           <p className="text-gray-600 line-clamp-2 h-20">{description}</p>
         </div>
 
-        <Button type="button" className="w-full" onClick={()=>handleDelete()}>
+        <Button type="button" className="w-full" onClick={() => handleDelete()}>
           <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
           Remove Scheduled Class
         </Button>

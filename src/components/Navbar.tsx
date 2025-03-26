@@ -25,14 +25,13 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
-  const handleLogout=()=>{
+
+  const handleLogout = () => {
     localStorage.removeItem("Usertoken");
     localStorage.removeItem("User");
     localStorage.removeItem("Admintoken");
-    window.location.href="/";
-  }
-
+    window.location.href = "/";
+  };
 
   return (
     <header
@@ -86,31 +85,32 @@ const Navbar = () => {
             </a> */}
             {isAdmin && (
               <>
-              <Link
-                to="/admin"
-                className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white"
-              >
-                Admin panel
-              </Link>
-            <LogOutIcon className="cursor-pointer" onClick={handleLogout}/>
-            </>
-
+                <Link
+                  to="/admin"
+                  className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white"
+                >
+                  Admin panel
+                </Link>
+                <LogOutIcon className="cursor-pointer" onClick={handleLogout} />
+              </>
             )}
             {!isAdmin &&
               (user?.fullName ? (
                 <>
-                <Link to="/profile" className="flex items-center space-x-2">
-                  <User2Icon className="text-blue-500 line-clamp-1" />
-                  {user.fullName}
-                </Link>
-                <LogOutIcon className="cursor-pointer" onClick={handleLogout}/>
+                  <Link to="/profile" className="flex items-center space-x-2">
+                    <User2Icon className="text-blue-500 line-clamp-1" />
+                    {user.fullName}
+                  </Link>
+                  <LogOutIcon
+                    className="cursor-pointer"
+                    onClick={handleLogout}
+                  />
                 </>
               ) : (
                 <Link to="/login">
                   <Button>Login</Button>
                 </Link>
               ))}
-              
           </nav>
         </div>
 
