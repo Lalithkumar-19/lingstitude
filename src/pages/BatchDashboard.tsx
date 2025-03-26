@@ -16,6 +16,11 @@ interface Article {
   publishedAt: string;
 }
 
+type Thought = {
+  content: string;
+  author: string;
+};
+
 const BatchDashboard = () => {
 
   const [batchData, setBatchData] = useState(null);
@@ -52,13 +57,11 @@ const BatchDashboard = () => {
 
 
   
-  
-  
     const [articles, setArticles] = useState<Article[]>([]);
   
     const fetchNews = async () => {
       try {
-        const { data } = await axiosInstance.get("/api/news", {
+        const { data } = await axiosInstance.get("/api/external/news", {
           params: { country: "us", category: "general" },
         });
         setArticles(data.articles);
@@ -70,6 +73,30 @@ const BatchDashboard = () => {
     useEffect(() => {
       fetchNews();
     }, []);
+
+
+    const [thought, setThought] = useState<Thought | null>(null);
+const [loading, setLoading] = useState(true);
+
+const fetchThought = async () => {
+  try {
+    setLoading(true);
+    const response = await axiosInstance.get("/api/external/thoughts");
+    console.log("API Response:", response.data);
+
+    // Set the thought object directly from response.data
+    setThought(response.data); 
+  } catch (error) {
+    console.error("Error fetching thought:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchThought();
+}, []);
+
 
   return (
     <div className="container mx-auto px-4 py-8 mt-10">
@@ -174,8 +201,29 @@ const BatchDashboard = () => {
       </Card>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 mt-5">
-      
+      {/* Thought Section */}
+      <Card className="max-w-md mx-auto p-4 mt-5">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold text-center">
+          Thought for the Day
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : thought ? (
+          <div className="space-y-4">
+            <p className="italic text-lg">"{thought.content}"</p>
+            <p className="text-right text-sm">- {thought.author}</p>
+          </div>
+        ) : (
+          <p className="text-center text-red-500">Failed to load thought!</p>
+        )}
+      </CardContent>
+    </Card>
+
+        {/* News Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 mt-5">      
       {articles.map((article, index) => (
         <Card key={index} className="bg-white shadow-md rounded-2xl">
           {article.image && (
@@ -201,6 +249,10 @@ const BatchDashboard = () => {
         </Card>
       ))}
     </div>
+
+
+    
+
     </div>
   );
 };

@@ -99,7 +99,7 @@ const Navbar = () => {
             {!isAdmin &&
               (user?.fullName ? (
                 <>
-                <Link to="/dashboard" className="flex items-center space-x-2">
+                <Link to="/profile" className="flex items-center space-x-2">
                   <User2Icon className="text-blue-500 line-clamp-1" />
                   {user.fullName}
                 </Link>

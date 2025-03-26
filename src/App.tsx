@@ -22,6 +22,7 @@ import { AppDispatch, RootState } from "./redux/store";
 import { addUser, adminToggle } from "./redux/userSlice";
 import About from "./pages/About";
 import Courses from "./pages/Courses";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/courses" element={<Courses />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/live-classes" element={<LiveClasses />} />
                 <Route path="/batches" element={<BatchDashboard />} />
                 <Route path="/practice-partner" element={<PracticePartner />} />
