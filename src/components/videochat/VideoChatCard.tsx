@@ -33,7 +33,6 @@ export const VideoChatCard = () => {
           size="5"
           radius="full"
           fallback={<VideoIcon size={28} strokeWidth={1.5} />}
-          style={{ backgroundColor: "#fff", padding: "10px" }}
         />
         <Flex direction="column" gap="1" style={{ flex: 1 }}>
           <Text as="div" size="4" weight="bold" style={{ color: "#fff" }}>
