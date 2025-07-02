@@ -139,7 +139,7 @@ const BatchDashboard = () => {
 
       <BatchContent />
       <h2 className="pl-7 text-2xl">Interact For This Day</h2>
-      <div className="mt-10 flex w-full gap-10 items-center place-content-center">
+      <div className="mt-10 flex md:flex-row flex-col w-full gap-10 items-center place-content-center">
         <VideoChatCard />
         {thought && (
           <ThoughtDayCard

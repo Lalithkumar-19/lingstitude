@@ -14,6 +14,7 @@ const Navbar = () => {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
 
   useEffect(() => {
+    // Handle scroll effect
     const handleScroll = () => {
       if (window.scrollY > 20) {
         setScrolled(true);
@@ -22,9 +23,15 @@ const Navbar = () => {
       }
     };
 
+    // Disable scroll when mobile menu is open
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.style.overflow = "auto"; // Reset scroll on unmount
+    };
+  }, [isOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem("Usertoken");
@@ -44,13 +51,14 @@ const Navbar = () => {
         <a
           href="/"
           className="flex items-center space-x-2 relative z-10"
-          aria-label="Lingstitude Logo"
+          aria-label="Lingstitute Logo"
         >
           <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-800">
             Lingstitute
           </span>
         </a>
 
+        {/* Desktop Navbar */}
         <div className="hidden md:flex items-center space-x-8">
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <a
@@ -67,7 +75,6 @@ const Navbar = () => {
                 Batches
               </a>
             )}
-
             <a
               href="about"
               className="text-foreground/80 hover:text-foreground transition-colors"
@@ -80,9 +87,7 @@ const Navbar = () => {
             >
               Testimonials
             </a>
-            {/* <a href="signup" className="text-foreground/80 hover:text-foreground transition-colors">
-              Sign Up
-            </a> */}
+
             {isAdmin && (
               <>
                 <Link
@@ -114,6 +119,7 @@ const Navbar = () => {
           </nav>
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden relative z-10 p-2"
@@ -122,56 +128,88 @@ const Navbar = () => {
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Mobile menu */}
+        {/* Mobile Menu */}
         <div
           className={`fixed inset-0 bg-white px-8 py-24 flex flex-col origin-top transition-all duration-300 ease-in-out md:hidden ${
             isOpen
-              ? "opacity-100 translate-y-0"
+              ? "opacity-100 translate-y-0 h-screen"
               : "opacity-0 -translate-y-full pointer-events-none"
           }`}
         >
           <nav className="flex flex-col space-y-8 text-lg font-medium">
             <a
-              href="#"
+              href="/"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Home
             </a>
+            {user && user.isStudent && (
+              <a
+                href="batches"
+                className="text-foreground/80 hover:text-foreground transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Batches
+              </a>
+            )}
             <a
-              href="live-classes"
-              className="text-foreground/80 hover:text-foreground transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Live Classes
-            </a>
-            <a
-              href="#about"
+              href="about"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               About Us
             </a>
             <a
-              href="#testimonials"
+              href="/#testimonials"
               className="text-foreground/80 hover:text-foreground transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Testimonials
             </a>
 
-            {user && user.fullName ? (
-              // Show Dashboard if user exists and has fullName
-              <Link to="/dashboard" className="flex items-center space-x-2">
-                <User2Icon className="text-blue-500 line-clamp-1" />
-                {user.fullName}
-              </Link>
-            ) : (
-              // Show Login if no user is found
-              <Link to="/login">
-                <Button>Login</Button>
-              </Link>
+            {isAdmin && (
+              <>
+                <Link
+                  to="/admin"
+                  className="p-2 rounded-sm text-foreground/80 hover:text-foreground transition-colors bg-blue-600 text-white hover:text-white"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Admin panel
+                </Link>
+                <LogOutIcon
+                  className="cursor-pointer"
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                />
+              </>
             )}
+            {!isAdmin &&
+              (user?.fullName ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="flex items-center space-x-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User2Icon className="text-blue-500 line-clamp-1" />
+                    {user.fullName}
+                  </Link>
+                  <LogOutIcon
+                    className="cursor-pointer"
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                  />
+                </>
+              ) : (
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Button>Login</Button>
+                </Link>
+              ))}
           </nav>
         </div>
       </div>
